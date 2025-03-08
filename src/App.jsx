@@ -43,6 +43,7 @@ function App() {
   const [showInfo, setShowInfo] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState('orbit'); // 'orbit' or 'fly'
+  const [viewMode, setViewMode] = useState('3d'); // '3d' or '2d'
   const totalDays = 364;
   
   // Audio references
@@ -175,6 +176,16 @@ function App() {
     setAutoplaySpeed(speed);
   };
 
+  const toggleViewMode = () => {
+    // Play UI click sound
+    if (soundEnabled && uiClickSoundRef.current) {
+      uiClickSoundRef.current.currentTime = 0;
+      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+    }
+    
+    setViewMode(prev => prev === '3d' ? '2d' : '3d');
+  };
+
   if (isLoading) {
     return (
       <div className="loader-container">
@@ -188,7 +199,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <div className="canvas-container">
+      <div className="canvas-container" style={{ display: viewMode === '3d' ? 'block' : 'none' }}>
         <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
           <Suspense fallback={<Loader />}>
             <ambientLight intensity={0.5} />
@@ -220,6 +231,15 @@ function App() {
         </Canvas>
       </div>
       
+      {/* Fallback image display - zobrazí se, pokud 3D nefunguje nebo je zvolen 2D režim */}
+      <div className="fallback-image" style={{ display: viewMode === '2d' ? 'block' : 'none' }}>
+        <img 
+          src={`/images/day_${(currentDay % 8) + 1}.JPG`} 
+          alt={`Den ${currentDay + 1}`} 
+          style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 0 }}
+        />
+      </div>
+      
       <div className="counter">DEN {currentDay + 1} / {totalDays}</div>
       
       <Timeline 
@@ -248,6 +268,13 @@ function App() {
           onClick={toggleCameraMode}
         >
           {cameraMode === 'orbit' ? "KAMERA: ORBIT" : "KAMERA: LET"}
+        </button>
+        
+        <button 
+          className={`control-button ${viewMode === '2d' ? 'active' : ''}`}
+          onClick={toggleViewMode}
+        >
+          {viewMode === '3d' ? "ZOBRAZENÍ: 3D" : "ZOBRAZENÍ: 2D"}
         </button>
         
         <button 
@@ -321,12 +348,5 @@ function App() {
     </div>
   );
 }
-
-// Import FlyControls dynamically to avoid SSR issues
-const FlyControls = React.lazy(() => 
-  import('@react-three/drei').then(module => {
-    return { default: module.FlyControls };
-  })
-);
 
 export default App; 

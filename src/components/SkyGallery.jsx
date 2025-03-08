@@ -10,7 +10,11 @@ const getImagePath = (dayIndex) => {
   // Since we only have 8 images, we'll cycle through them
   const availableImages = 8;
   const imageNumber = (dayIndex % availableImages) + 1;
-  return `/images/day_${imageNumber}.JPG`;
+  
+  // Try both formats to ensure compatibility
+  const path = `/images/day_${imageNumber}.JPG`;
+  console.log("Loading image from path:", path);
+  return path;
 };
 
 // Enhanced custom shader material for artistic effects
@@ -151,11 +155,26 @@ const SkyGallery = ({ currentDay, totalDays }) => {
   const [prevDay, setPrevDay] = useState(currentDay);
   const [prevTexture, setPrevTexture] = useState(null);
   const [transitionProgress, setTransitionProgress] = useState(0);
+  const [textureLoaded, setTextureLoaded] = useState(false);
   
   // Load the current day's texture
-  const texture = useTexture(getImagePath(currentDay));
-  texture.minFilter = THREE.LinearFilter;
-  texture.magFilter = THREE.LinearFilter;
+  const texture = useTexture(getImagePath(currentDay), (loadedTexture) => {
+    console.log("Texture loaded successfully:", getImagePath(currentDay));
+    setTextureLoaded(true);
+  });
+  
+  // Configure texture settings
+  useEffect(() => {
+    if (texture) {
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.needsUpdate = true;
+      
+      // Log texture information for debugging
+      console.log("Texture dimensions:", texture.image?.width, "x", texture.image?.height);
+      console.log("Texture format:", texture.format);
+    }
+  }, [texture]);
   
   // Handle texture transition when day changes
   useEffect(() => {
@@ -165,20 +184,18 @@ const SkyGallery = ({ currentDay, totalDays }) => {
       setPrevDay(currentDay);
       
       // Animate transition
-      gsap.fromTo(
-        { progress: 0 },
-        { 
-          progress: 1, 
-          duration: 1.2, 
-          ease: "power2.inOut",
-          onUpdate: (tween) => {
-            setTransitionProgress(tween.progress);
-          },
-          onComplete: () => {
-            setTransitionProgress(0);
-          }
+      const obj = { progress: 0 };
+      gsap.to(obj, { 
+        progress: 1, 
+        duration: 1.2, 
+        ease: "power2.inOut",
+        onUpdate: () => {
+          setTransitionProgress(obj.progress);
+        },
+        onComplete: () => {
+          setTransitionProgress(0);
         }
-      );
+      });
     }
   }, [currentDay, prevDay, texture]);
   
@@ -242,16 +259,34 @@ const SkyGallery = ({ currentDay, totalDays }) => {
       {/* Background environment sphere with enhanced shader */}
       <mesh ref={meshRef}>
         <sphereGeometry args={[10, 64, 64]} />
-        <enhancedSkyShaderMaterial 
-          ref={materialRef}
+        {textureLoaded ? (
+          <enhancedSkyShaderMaterial 
+            ref={materialRef}
+            map={texture} 
+            prevMap={prevTexture || texture}
+            side={THREE.BackSide}
+            transparent={true}
+            distortionIntensity={0.2}
+            colorShift={0.1}
+            dayIndex={currentDay}
+            transitionProgress={transitionProgress}
+          />
+        ) : (
+          // Fallback material while texture is loading
+          <meshBasicMaterial 
+            color="#000033" 
+            side={THREE.BackSide}
+            wireframe={true}
+          />
+        )}
+      </mesh>
+      
+      {/* Add a simple sphere with basic texture for debugging */}
+      <mesh position={[0, 0, -3]} scale={[1, 1, 1]}>
+        <sphereGeometry args={[1, 32, 32]} />
+        <meshBasicMaterial 
           map={texture} 
-          prevMap={prevTexture || texture}
-          side={THREE.BackSide}
-          transparent={true}
-          distortionIntensity={0.2}
-          colorShift={0.1}
-          dayIndex={currentDay}
-          transitionProgress={transitionProgress}
+          side={THREE.FrontSide}
         />
       </mesh>
       
@@ -389,10 +424,7 @@ const EnhancedParticles = ({ count, currentDay }) => {
   return (
     <instancedMesh ref={mesh} args={[null, null, count]}>
       <sphereGeometry args={[0.05, 10, 10]} />
-      <instancedMesh ref={mesh} args={[null, null, count]}>
-        <sphereGeometry args={[0.05, 10, 10]} />
-        <meshBasicMaterial vertexColors transparent opacity={0.6} />
-      </instancedMesh>
+      <meshBasicMaterial vertexColors transparent opacity={0.6} />
     </instancedMesh>
   );
 };
