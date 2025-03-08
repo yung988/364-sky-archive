@@ -1,10 +1,23 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, Stars, useProgress, Html, FlyControls } from '@react-three/drei';
 import SkyGallery from './components/SkyGallery';
 import Timeline from './components/Timeline';
 import { gsap } from 'gsap';
 import './styles.css';
+
+// Komponenta pro získání reference na kameru
+function CameraController({ cameraRef }) {
+  const { camera } = useThree();
+  
+  useEffect(() => {
+    if (cameraRef) {
+      cameraRef.current = camera;
+    }
+  }, [camera, cameraRef]);
+  
+  return null;
+}
 
 // Loader component
 function Loader() {
@@ -46,6 +59,9 @@ function App() {
   const [viewMode, setViewMode] = useState('3d'); // '3d' or '2d'
   const [timeOfDay, setTimeOfDay] = useState('den'); // 'den' or 'noc'
   const totalDays = 364;
+  
+  // Reference na kameru pro animace
+  const cameraRef = useRef();
   
   // Audio references
   const ambientSoundRef = useRef(null);
@@ -92,21 +108,14 @@ function App() {
     let interval;
     if (autoplay) {
       interval = setInterval(() => {
-        // Použijeme GSAP pro plynulý přechod
-        gsap.to({}, {
-          duration: 1.5, // Delší doba pro plynulejší přechod
-          onComplete: () => {
-            setCurrentDay((prev) => {
-              const nextDay = (prev + 1) % totalDays;
-              // Play transition sound if enabled
-              if (soundEnabled && transitionSoundRef.current) {
-                transitionSoundRef.current.currentTime = 0;
-                transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
-              }
-              return nextDay;
-            });
-          },
-          ease: "power2.inOut" // Plynulejší přechodová funkce
+        setCurrentDay((prev) => {
+          const nextDay = (prev + 1) % totalDays;
+          // Play transition sound if enabled
+          if (soundEnabled && transitionSoundRef.current) {
+            transitionSoundRef.current.currentTime = 0;
+            transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+          }
+          return nextDay;
         });
       }, autoplaySpeed);
     }
@@ -125,13 +134,11 @@ function App() {
   const determineTimeOfDay = (day) => {
     // Jednoduchá simulace - polovina roku je den, polovina noc
     // V reálné aplikaci by toto bylo složitější podle skutečné astronomické pozice
-    const dayProgress = day / totalDays;
-    const sunPosition = Math.sin(Math.PI * 2 * dayProgress);
-    
-    // Aktualizujeme stav denní doby
-    setTimeOfDay(sunPosition > 0 ? 'den' : 'noc');
-    
-    return sunPosition > 0;
+    if (day < totalDays / 2) {
+      setTimeOfDay('den');
+    } else {
+      setTimeOfDay('noc');
+    }
   };
   
   // Aktualizace denní doby při změně dne
@@ -142,20 +149,13 @@ function App() {
   const handleDayChange = (day) => {
     // Only change if it's a different day
     if (day !== currentDay) {
-      // Use GSAP for smooth state transition
-      gsap.to({}, {
-        duration: 1.5, // Delší doba pro plynulejší přechod
-        onComplete: () => {
-          setCurrentDay(day);
-          
-          // Play transition sound if enabled, but only if it's a user-initiated change
-          if (soundEnabled && transitionSoundRef.current && !autoplay) {
-            transitionSoundRef.current.currentTime = 0;
-            transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
-          }
-        },
-        ease: "power2.inOut" // Plynulejší přechodová funkce
-      });
+      setCurrentDay(day);
+      
+      // Play transition sound if enabled, but only if it's a user-initiated change
+      if (soundEnabled && transitionSoundRef.current && !autoplay) {
+        transitionSoundRef.current.currentTime = 0;
+        transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+      }
     }
     
     if (autoplay) setAutoplay(false);
@@ -218,7 +218,32 @@ function App() {
       uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
     }
     
-    setViewMode(prev => prev === '3d' ? '2d' : '3d');
+    // Plynulý přechod mezi 2D a 3D režimem
+    if (viewMode === '3d') {
+      // Přechod z 3D do 2D - nastavíme kameru přímo před obrázek
+      gsap.to(cameraRef.current.position, {
+        duration: 1.0,
+        x: 0,
+        y: 0,
+        z: 8,
+        ease: "power2.inOut",
+        onComplete: () => {
+          setViewMode('2d');
+        }
+      });
+    } else {
+      // Přechod z 2D do 3D - vrátíme kameru do původní pozice
+      gsap.to(cameraRef.current.position, {
+        duration: 1.0,
+        x: 0,
+        y: 0,
+        z: 5,
+        ease: "power2.inOut",
+        onComplete: () => {
+          setViewMode('3d');
+        }
+      });
+    }
   };
 
   if (isLoading) {
@@ -234,48 +259,52 @@ function App() {
 
   return (
     <div className="app-container">
-      <div className="canvas-container" style={{ display: viewMode === '3d' ? 'block' : 'none' }}>
-        <Canvas camera={{ position: [0, 0, 0], fov: 75, up: [0, 1, 0] }}>
+      <div className="canvas-container">
+        <Canvas 
+          camera={{ position: [0, 0, 5], fov: 45, near: 0.1, far: 1000 }}
+          gl={{ 
+            antialias: true,
+            alpha: true,
+            powerPreference: "high-performance",
+            precision: "highp"
+          }}
+        >
           <Suspense fallback={<Loader />}>
             <SkyGallery currentDay={currentDay} totalDays={totalDays} />
-            {cameraMode === 'orbit' ? (
+            {viewMode === '3d' ? (
+              cameraMode === 'orbit' ? (
+                <OrbitControls 
+                  enableZoom={true} 
+                  enablePan={false}
+                  maxDistance={10}
+                  minDistance={3}
+                  // Nastavení pro lepší pohled na oblohu
+                  minPolarAngle={Math.PI / 4} 
+                  maxPolarAngle={Math.PI * 3/4}
+                  // Výchozí rotace kamery - pohled na oblohu
+                  target={[0, 0, 0]}
+                />
+              ) : (
+                <FlyControls 
+                  movementSpeed={3}
+                  rollSpeed={0.3}
+                  dragToLook={true}
+                />
+              )
+            ) : (
+              // 2D režim - fixní kamera přímo před obrázkem
               <OrbitControls 
-                enableZoom={true} 
-                enablePan={true}
-                maxDistance={15}
-                minDistance={0.1}
-                // Nastavení pro lepší pohled na oblohu
-                minPolarAngle={0} 
-                maxPolarAngle={Math.PI}
-                // Výchozí rotace kamery - pohled na oblohu
+                enableZoom={false} 
+                enablePan={false}
+                enableRotate={false}
+                minDistance={8}
+                maxDistance={8}
                 target={[0, 0, 0]}
               />
-            ) : (
-              <FlyControls 
-                movementSpeed={5}
-                rollSpeed={0.5}
-                dragToLook={true}
-              />
             )}
+            <CameraController cameraRef={cameraRef} />
           </Suspense>
         </Canvas>
-      </div>
-      
-      {/* 2D zobrazení - jednoduchý obrázek na celou obrazovku */}
-      <div className="fullscreen-image" style={{ display: viewMode === '2d' ? 'block' : 'none' }}>
-        <img 
-          src={`/images/day_${(currentDay % 8) + 1}.JPG`} 
-          alt={`Den ${currentDay + 1}`} 
-          style={{ 
-            width: '100%', 
-            height: '100%', 
-            objectFit: 'cover', 
-            position: 'absolute', 
-            top: 0, 
-            left: 0, 
-            zIndex: 0 
-          }}
-        />
       </div>
       
       <div className="counter">DEN {currentDay + 1} / {totalDays}</div>
