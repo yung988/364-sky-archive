@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useTexture, shaderMaterial, Stars, Cloud } from '@react-three/drei';
+import { useTexture, shaderMaterial, Stars } from '@react-three/drei';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { extend } from '@react-three/fiber';
@@ -129,27 +129,12 @@ extend({ SkyShaderMaterial });
 const SkyGallery = ({ currentDay, totalDays }) => {
   const meshRef = useRef();
   const materialRef = useRef();
-  const groundRef = useRef();
   const starsRef = useRef();
-  const cloudsRef = useRef([]);
   const { viewport, clock } = useThree();
   const [prevDay, setPrevDay] = useState(currentDay);
   const [transitionProgress, setTransitionProgress] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isDayTime, setIsDayTime] = useState(true);
-  
-  // Načtení textury trávy
-  const grassTexture = useTexture('/textures/grass.jpg');
-  
-  // Konfigurace textury trávy
-  useEffect(() => {
-    if (grassTexture) {
-      grassTexture.wrapS = grassTexture.wrapT = THREE.RepeatWrapping;
-      grassTexture.repeat.set(20, 20);
-      grassTexture.anisotropy = 16;
-      grassTexture.encoding = THREE.sRGBEncoding;
-    }
-  }, [grassTexture]);
   
   // Calculate next day
   const nextDay = (currentDay + 1) % totalDays;
@@ -225,32 +210,6 @@ const SkyGallery = ({ currentDay, totalDays }) => {
     });
   }, [sunPosition]);
   
-  // Generujeme náhodné pozice pro mraky
-  const cloudPositions = useMemo(() => {
-    const positions = [];
-    const count = 25; // Zvýšený počet mraků pro lepší pokrytí oblohy
-    
-    for (let i = 0; i < count; i++) {
-      // Rovnoměrnější rozložení mraků po celé obloze
-      const theta = (i / count) * Math.PI * 2 + Math.random() * 0.5; // Rovnoměrnější rozložení + trochu náhody
-      const phi = Math.random() * Math.PI * 0.4 + Math.PI * 0.1; // Mraky jsou hlavně nad horizontem
-      const radius = 18 + Math.random() * 1.5; // Vzdálenost od středu - blíže ke kopuli oblohy
-      
-      const x = radius * Math.sin(phi) * Math.cos(theta);
-      const y = radius * Math.sin(phi) * Math.sin(theta);
-      const z = radius * Math.cos(phi);
-      
-      // Náhodná velikost a MNOHEM POMALEJŠÍ rychlost
-      const size = 4 + Math.random() * 6; // Větší mraky
-      const speed = 0.0005 + Math.random() * 0.001; // Výrazně snížená rychlost
-      const opacity = 0.6 + Math.random() * 0.4;
-      
-      positions.push({ position: [x, y, z], size, speed, theta, radius, phi, opacity });
-    }
-    
-    return positions;
-  }, []);
-  
   // Update shader uniforms on each frame
   useFrame((state, delta) => {
     if (materialRef.current) {
@@ -269,89 +228,10 @@ const SkyGallery = ({ currentDay, totalDays }) => {
       // Velmi jemná rotace - simuluje pohyb oblohy
       meshRef.current.rotation.y += delta * 0.001; // Pomalejší rotace oblohy
     }
-    
-    // Rotace země - simuluje otáčení Země
-    if (groundRef.current) {
-      groundRef.current.rotation.y += delta * 0.002; // Pomalejší rotace země
-    }
-    
-    // Aktualizace pozic mraků
-    cloudsRef.current.forEach((cloud, index) => {
-      if (cloud && cloudPositions[index]) {
-        const { theta, radius, speed, phi } = cloudPositions[index];
-        const newTheta = theta + delta * speed;
-        
-        // Správný výpočet pozice na sféře
-        const x = radius * Math.sin(phi) * Math.cos(newTheta);
-        const y = radius * Math.sin(phi) * Math.sin(newTheta);
-        const z = radius * Math.cos(phi);
-        
-        cloud.position.x = x;
-        cloud.position.y = y;
-        cloud.position.z = z;
-        
-        // Aktualizujeme theta pro další snímek
-        cloudPositions[index].theta = newTheta;
-        
-        // Mraky jsou méně viditelné v noci
-        if (cloud.material) {
-          cloud.material.opacity = cloudPositions[index].opacity * (isDayTime ? 1.0 : 0.3);
-        }
-      }
-    });
   });
   
   return (
     <group>
-      {/* Země pod námi - upravená jako skutečný povrch */}
-      <mesh ref={groundRef} position={[0, -1.5, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[100, 100]} />
-        <meshStandardMaterial 
-          color="#4a8c32" 
-          roughness={0.9}
-          metalness={0.0}
-          map={grassTexture}
-        />
-      </mesh>
-      
-      {/* Přidáme několik detailů na zem - kameny, květiny atd. */}
-      <group position={[2, -1.45, 3]}>
-        <mesh>
-          <boxGeometry args={[0.5, 0.1, 0.4]} />
-          <meshStandardMaterial color="#888888" roughness={0.8} />
-        </mesh>
-      </group>
-      
-      <group position={[-3, -1.45, 2]}>
-        <mesh>
-          <sphereGeometry args={[0.3, 8, 8]} />
-          <meshStandardMaterial color="#777777" roughness={0.9} />
-        </mesh>
-      </group>
-      
-      {/* Několik květin */}
-      {[...Array(15)].map((_, i) => {
-        const x = Math.random() * 20 - 10;
-        const z = Math.random() * 20 - 10;
-        const height = 0.2 + Math.random() * 0.3;
-        const color = Math.random() > 0.5 ? "#ffff00" : "#ffffff";
-        
-        return (
-          <group key={i} position={[x, -1.45, z]}>
-            {/* Stonek */}
-            <mesh position={[0, height/2, 0]}>
-              <boxGeometry args={[0.05, height, 0.05]} />
-              <meshStandardMaterial color="#2a6e12" />
-            </mesh>
-            {/* Květ */}
-            <mesh position={[0, height, 0]}>
-              <sphereGeometry args={[0.1, 8, 8]} />
-              <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.2} />
-            </mesh>
-          </group>
-        );
-      })}
-      
       {/* Obloha kolem nás */}
       <mesh ref={meshRef}>
         <sphereGeometry args={[20, 64, 64]} />
@@ -369,21 +249,6 @@ const SkyGallery = ({ currentDay, totalDays }) => {
           isDayTime={isDayTime ? 1.0 : 0.0}
         />
       </mesh>
-      
-      {/* Mraky */}
-      {cloudPositions.map((cloudData, index) => (
-        <Cloud
-          key={index}
-          ref={(el) => (cloudsRef.current[index] = el)}
-          position={cloudData.position}
-          args={[cloudData.size, 2]}
-          opacity={cloudData.opacity}
-          speed={0}
-          width={cloudData.size}
-          depth={1.5}
-          segments={20}
-        />
-      ))}
       
       {/* Hvězdy pro noční oblohu */}
       <group ref={starsRef}>
