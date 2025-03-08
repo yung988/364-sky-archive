@@ -227,6 +227,7 @@ function App() {
             powerPreference: "high-performance",
             precision: "highp"
           }}
+          dpr={[1, 2]} // Responsive pixel ratio
         >
           <Suspense fallback={<Loader />}>
             <SkyGallery currentDay={currentDay} totalDays={totalDays} />
@@ -242,11 +243,12 @@ function App() {
                   maxPolarAngle={Math.PI}
                   // Výchozí rotace kamery - pohled na oblohu
                   target={[0, 0, 0]}
+                  rotateSpeed={0.5} // Pomalejší rotace pro lepší kontrolu
                 />
               ) : (
                 <FlyControls 
-                  movementSpeed={3}
-                  rollSpeed={0.3}
+                  movementSpeed={2}
+                  rollSpeed={0.2}
                   dragToLook={true}
                 />
               )
