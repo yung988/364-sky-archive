@@ -92,14 +92,21 @@ function App() {
     let interval;
     if (autoplay) {
       interval = setInterval(() => {
-        setCurrentDay((prev) => {
-          const nextDay = (prev + 1) % totalDays;
-          // Play transition sound if enabled
-          if (soundEnabled && transitionSoundRef.current) {
-            transitionSoundRef.current.currentTime = 0;
-            transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
-          }
-          return nextDay;
+        // Použijeme GSAP pro plynulý přechod
+        gsap.to({}, {
+          duration: 1.5, // Delší doba pro plynulejší přechod
+          onComplete: () => {
+            setCurrentDay((prev) => {
+              const nextDay = (prev + 1) % totalDays;
+              // Play transition sound if enabled
+              if (soundEnabled && transitionSoundRef.current) {
+                transitionSoundRef.current.currentTime = 0;
+                transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+              }
+              return nextDay;
+            });
+          },
+          ease: "power2.inOut" // Plynulejší přechodová funkce
         });
       }, autoplaySpeed);
     }
@@ -137,7 +144,7 @@ function App() {
     if (day !== currentDay) {
       // Use GSAP for smooth state transition
       gsap.to({}, {
-        duration: 0.5,
+        duration: 1.5, // Delší doba pro plynulejší přechod
         onComplete: () => {
           setCurrentDay(day);
           
@@ -146,7 +153,8 @@ function App() {
             transitionSoundRef.current.currentTime = 0;
             transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
           }
-        }
+        },
+        ease: "power2.inOut" // Plynulejší přechodová funkce
       });
     }
     

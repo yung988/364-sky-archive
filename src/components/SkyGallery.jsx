@@ -12,7 +12,7 @@ const getImagePath = (dayIndex) => {
   const imageNumber = (dayIndex % availableImages) + 1;
   
   // Log path for debugging
-  const path = `/images/day_${imageNumber}.JPG`;
+  const path = `/images/day_${imageNumber}.jpg`;
   console.log("Loading image from path:", path);
   return path;
 };
@@ -53,6 +53,12 @@ const SkyShaderMaterial = shaderMaterial(
     uniform float dayIndex;
     uniform vec3 sunPosition;
     
+    // Vylepšená funkce pro plynulejší přechod
+    float customSmoothstep(float edge0, float edge1, float x) {
+      float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+      return t * t * (3.0 - 2.0 * t);
+    }
+    
     void main() {
       // Upravíme UV souřadnice tak, aby obloha byla nad námi
       vec2 uv = vUv;
@@ -65,8 +71,9 @@ const SkyShaderMaterial = shaderMaterial(
       vec4 currentColor = texture2D(map, uv);
       vec4 nextColor = texture2D(nextMap, uv);
       
-      // Plynulý přechod mezi dny
-      vec4 color = mix(currentColor, nextColor, smoothstep(0.0, 1.0, transitionProgress));
+      // Plynulý přechod mezi dny - vylepšený
+      float smoothProgress = customSmoothstep(0.0, 1.0, transitionProgress);
+      vec4 color = mix(currentColor, nextColor, smoothProgress);
       
       // Přidáme jemný barevný posun podle dne
       float dayFactor = mod(dayIndex, 364.0) / 364.0;
@@ -135,16 +142,22 @@ const SkyGallery = ({ currentDay, totalDays }) => {
       
       // Start a very slow and smooth transition
       gsap.to({}, {
-        duration: 5.0, // Delší doba pro plynulejší přechod
+        duration: 8.0, // Delší doba pro plynulejší přechod
         onUpdate: function() {
-          setTransitionProgress(this.progress());
+          // Použijeme kubickou easing funkci pro plynulejší přechod
+          const progress = this.progress();
+          // Aplikujeme kubickou easing funkci pro plynulejší začátek a konec
+          const easedProgress = progress < 0.5
+            ? 4 * progress * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+          setTransitionProgress(easedProgress);
         },
         onComplete: function() {
           setPrevDay(currentDay);
           setTransitionProgress(0);
           setIsTransitioning(false);
         },
-        ease: "power1.inOut" // Plynulejší přechodová funkce
+        ease: "power2.inOut" // Plynulejší přechodová funkce
       });
     }
   }, [currentDay, prevDay, isTransitioning]);
