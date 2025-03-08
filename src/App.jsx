@@ -208,17 +208,18 @@ function App() {
   return (
     <div className="app-container">
       <div className="canvas-container" style={{ display: viewMode === '3d' ? 'block' : 'none' }}>
-        <Canvas camera={{ position: [0, 0, 0], fov: 75 }}>
+        <Canvas camera={{ position: [0, 0, 0], fov: 75, up: [0, 0, 1] }}>
           <Suspense fallback={<Loader />}>
-            <ambientLight intensity={0.5} />
-            <pointLight position={[10, 10, 10]} />
             <SkyGallery currentDay={currentDay} totalDays={totalDays} />
             {cameraMode === 'orbit' ? (
               <OrbitControls 
                 enableZoom={true} 
                 enablePan={true}
-                maxDistance={5}
+                maxDistance={10}
                 minDistance={0.1}
+                // Omezit rotaci, aby byl pohled vždy nahoru
+                minPolarAngle={Math.PI / 2 - 0.2} // Omezit pohled dolů
+                maxPolarAngle={Math.PI / 2 + 0.2} // Omezit pohled nahoru
               />
             ) : (
               <FlyControls 

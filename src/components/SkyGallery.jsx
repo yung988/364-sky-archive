@@ -104,125 +104,131 @@ const SkyShaderMaterial = shaderMaterial(
 // Extend Three Fiber with our custom material
 extend({ SkyShaderMaterial });
 
+// Komponenta pro jeden panel oblohy
+const SkyPanel = ({ texture, position, rotation }) => {
+  return (
+    <mesh position={position} rotation={rotation}>
+      <planeGeometry args={[30, 30]} />
+      <meshBasicMaterial map={texture} side={THREE.DoubleSide} />
+    </mesh>
+  );
+};
+
 const SkyGallery = ({ currentDay, totalDays }) => {
-  const meshRef = useRef();
-  const materialRef = useRef();
+  const groupRef = useRef();
   const { viewport, clock } = useThree();
-  const [prevDay, setPrevDay] = useState(currentDay);
-  const [transitionProgress, setTransitionProgress] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [textureLoaded, setTextureLoaded] = useState(false);
-  const [nextTextureLoaded, setNextTextureLoaded] = useState(false);
+  const [skyPanels, setSkyPanels] = useState([]);
+  const [speed, setSpeed] = useState(0.5); // Rychlost pohybu oblohy
   
-  // Calculate next day
-  const nextDay = (currentDay + 1) % totalDays;
-  
-  // Load the current day's texture
-  const texture = useTexture(getImagePath(currentDay), (loadedTexture) => {
-    console.log("Current texture loaded successfully:", getImagePath(currentDay));
-    setTextureLoaded(true);
-  });
-  
-  // Load the next day's texture for smooth transitions
-  const nextTexture = useTexture(getImagePath(nextDay), (loadedTexture) => {
-    console.log("Next texture loaded successfully:", getImagePath(nextDay));
-    setNextTextureLoaded(true);
-  });
-  
-  // Configure texture settings
-  useEffect(() => {
-    if (texture) {
-      texture.minFilter = THREE.LinearFilter;
-      texture.magFilter = THREE.LinearFilter;
-      texture.needsUpdate = true;
-    }
-    
-    if (nextTexture) {
-      nextTexture.minFilter = THREE.LinearFilter;
-      nextTexture.magFilter = THREE.LinearFilter;
-      nextTexture.needsUpdate = true;
-    }
-  }, [texture, nextTexture]);
-  
-  // Handle day change and start transition
-  useEffect(() => {
-    if (currentDay !== prevDay && !isTransitioning) {
-      console.log(`Starting transition from day ${prevDay} to day ${currentDay}`);
-      setIsTransitioning(true);
-      
-      // Start a very slow and smooth transition
-      gsap.to({}, {
-        duration: 3.5, // Longer duration for smoother transition
-        onUpdate: function() {
-          setTransitionProgress(this.progress());
-        },
-        onComplete: function() {
-          setPrevDay(currentDay);
-          setTransitionProgress(0);
-          setIsTransitioning(false);
-        },
-        ease: "power1.inOut" // Smoother easing function
+  // Načtení textur pro aktuální a okolní dny
+  const textures = useMemo(() => {
+    const result = [];
+    // Načteme textury pro 5 dnů (aktuální, 2 předchozí, 2 následující)
+    for (let i = -2; i <= 2; i++) {
+      const day = (currentDay + i + totalDays) % totalDays;
+      result.push({
+        day,
+        path: getImagePath(day)
       });
     }
-  }, [currentDay, prevDay, isTransitioning]);
-  
-  // Calculate sun position based on time of day
-  const sunPosition = useMemo(() => {
-    const dayProgress = currentDay / totalDays;
-    const angle = Math.PI * (0.5 + dayProgress * 2);
-    return new THREE.Vector3(
-      Math.cos(angle),
-      Math.sin(angle) * 0.5 + 0.5, // Keep sun slightly above horizon
-      Math.sin(angle)
-    );
+    return result;
   }, [currentDay, totalDays]);
   
-  // Update shader uniforms on each frame
-  useFrame((state, delta) => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.time.value = state.clock.elapsedTime;
-      materialRef.current.uniforms.dayIndex.value = currentDay;
-      materialRef.current.uniforms.transitionProgress.value = transitionProgress;
-      materialRef.current.uniforms.sunPosition.value = sunPosition;
+  // Načtení textur
+  const loadedTextures = textures.map(item => {
+    return {
+      day: item.day,
+      texture: useTexture(item.path)
+    };
+  });
+  
+  // Konfigurace textur
+  useEffect(() => {
+    loadedTextures.forEach(item => {
+      if (item.texture) {
+        item.texture.minFilter = THREE.LinearFilter;
+        item.texture.magFilter = THREE.LinearFilter;
+        item.texture.needsUpdate = true;
+      }
+    });
+  }, [loadedTextures]);
+  
+  // Vytvoření panelů oblohy
+  useEffect(() => {
+    // Vytvoříme 5 panelů oblohy v řadě nad pozorovatelem
+    const panels = loadedTextures.map((item, index) => {
+      const position = [0, 30 * (index - 2), 10]; // Panely jsou umístěny v řadě nad pozorovatelem
+      const rotation = [-Math.PI / 2, 0, 0]; // Otočení, aby byly vidět shora
       
-      // Ensure textures are set
-      if (texture) materialRef.current.uniforms.map.value = texture;
-      if (nextTexture) materialRef.current.uniforms.nextMap.value = nextTexture;
-    }
+      return {
+        day: item.day,
+        texture: item.texture,
+        position,
+        rotation,
+        key: `sky-panel-${item.day}`
+      };
+    });
     
-    if (meshRef.current) {
-      // Very gentle continuous rotation - much slower now
-      meshRef.current.rotation.y += delta * 0.01;
+    setSkyPanels(panels);
+  }, [loadedTextures]);
+  
+  // Animace pohybu oblohy
+  useFrame((state, delta) => {
+    if (groupRef.current) {
+      // Posouváme celou skupinu panelů směrem k pozorovateli
+      groupRef.current.position.y -= delta * speed;
+      
+      // Když první panel zmizí za pozorovatelem, přesuneme ho na konec řady
+      if (groupRef.current.position.y < -30) {
+        groupRef.current.position.y += 30;
+        
+        // Aktualizujeme panely - posuneme je o jeden den dopředu
+        setSkyPanels(prev => {
+          const newPanels = [...prev];
+          // Vezmeme první panel a přesuneme ho na konec
+          const firstPanel = newPanels.shift();
+          // Aktualizujeme jeho den a texturu
+          const newDay = (currentDay + 3) % totalDays;
+          firstPanel.day = newDay;
+          firstPanel.texture = useTexture(getImagePath(newDay));
+          firstPanel.position = [0, 30 * 2, 10]; // Umístíme ho na konec řady
+          newPanels.push(firstPanel);
+          return newPanels;
+        });
+      }
     }
   });
   
   return (
     <group>
-      {/* Sky sphere - we're inside looking out */}
-      <mesh ref={meshRef}>
-        <sphereGeometry args={[10, 64, 64]} />
-        <skyShaderMaterial 
-          ref={materialRef}
-          map={texture} 
-          nextMap={nextTexture}
-          side={THREE.BackSide}
-          transparent={true}
-          distortionIntensity={0.1}
-          colorShift={0.05}
-          dayIndex={currentDay}
-          transitionProgress={transitionProgress}
-          sunPosition={sunPosition}
-        />
+      {/* Travnatý povrch pod pozorovatelem */}
+      <mesh position={[0, 0, -1]} rotation={[0, 0, 0]}>
+        <planeGeometry args={[100, 100]} />
+        <meshStandardMaterial color="#2a6e12" roughness={0.8} />
       </mesh>
       
-      {/* Add a subtle sun light */}
-      <pointLight 
-        position={[sunPosition.x * 8, sunPosition.y * 8, sunPosition.z * 8]} 
-        intensity={5} 
+      {/* Skupina panelů oblohy */}
+      <group ref={groupRef}>
+        {skyPanels.map(panel => (
+          <SkyPanel 
+            key={panel.key}
+            texture={panel.texture}
+            position={panel.position}
+            rotation={panel.rotation}
+          />
+        ))}
+      </group>
+      
+      {/* Světlo simulující slunce */}
+      <directionalLight 
+        position={[10, 10, 10]} 
+        intensity={1} 
         color="#ffeecc" 
-        distance={20}
-        decay={2}
       />
+      
+      {/* Ambientní světlo pro základní osvětlení scény */}
+      <ambientLight intensity={0.5} />
     </group>
   );
 };
