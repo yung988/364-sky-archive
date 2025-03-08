@@ -39,10 +39,11 @@ function App() {
   const [currentDay, setCurrentDay] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [autoplay, setAutoplay] = useState(false);
-  const [autoplaySpeed, setAutoplaySpeed] = useState(2000); // ms between days
+  const [autoplaySpeed, setAutoplaySpeed] = useState(5000); // ms between days - default slower
   const [showInfo, setShowInfo] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState('orbit'); // 'orbit' or 'fly'
+  const [viewMode, setViewMode] = useState('3d'); // '3d' or '2d'
   const totalDays = 364;
   
   // Audio references
@@ -113,13 +114,21 @@ function App() {
   }, []);
 
   const handleDayChange = (day) => {
+    // Only change if it's a different day
     if (day !== currentDay) {
-      setCurrentDay(day);
-      // Play transition sound if enabled, but only if it's a user-initiated change
-      if (soundEnabled && transitionSoundRef.current && !autoplay) {
-        transitionSoundRef.current.currentTime = 0;
-        transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
-      }
+      // Use GSAP for smooth state transition
+      gsap.to({}, {
+        duration: 0.5,
+        onComplete: () => {
+          setCurrentDay(day);
+          
+          // Play transition sound if enabled, but only if it's a user-initiated change
+          if (soundEnabled && transitionSoundRef.current && !autoplay) {
+            transitionSoundRef.current.currentTime = 0;
+            transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+          }
+        }
+      });
     }
     
     if (autoplay) setAutoplay(false);
@@ -175,6 +184,16 @@ function App() {
     setAutoplaySpeed(speed);
   };
 
+  const toggleViewMode = () => {
+    // Play UI click sound
+    if (soundEnabled && uiClickSoundRef.current) {
+      uiClickSoundRef.current.currentTime = 0;
+      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+    }
+    
+    setViewMode(prev => prev === '3d' ? '2d' : '3d');
+  };
+
   if (isLoading) {
     return (
       <div className="loader-container">
@@ -188,7 +207,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <div className="canvas-container">
+      <div className="canvas-container" style={{ display: viewMode === '3d' ? 'block' : 'none' }}>
         <Canvas camera={{ position: [0, 0, 0], fov: 75 }}>
           <Suspense fallback={<Loader />}>
             <ambientLight intensity={0.5} />
@@ -212,12 +231,20 @@ function App() {
         </Canvas>
       </div>
       
-      {/* Fallback image display - zobrazí se, pokud 3D nefunguje nebo je zvolen 2D režim */}
-      <div className="fallback-image" style={{ display: cameraMode === 'fly' ? 'block' : 'none' }}>
+      {/* 2D zobrazení - jednoduchý obrázek na celou obrazovku */}
+      <div className="fullscreen-image" style={{ display: viewMode === '2d' ? 'block' : 'none' }}>
         <img 
           src={`/images/day_${(currentDay % 8) + 1}.JPG`} 
           alt={`Den ${currentDay + 1}`} 
-          style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 0 }}
+          style={{ 
+            width: '100%', 
+            height: '100%', 
+            objectFit: 'cover', 
+            position: 'absolute', 
+            top: 0, 
+            left: 0, 
+            zIndex: 0 
+          }}
         />
       </div>
       
@@ -252,6 +279,13 @@ function App() {
         </button>
         
         <button 
+          className={`control-button ${viewMode === '2d' ? 'active' : ''}`}
+          onClick={toggleViewMode}
+        >
+          {viewMode === '3d' ? "ZOBRAZENÍ: 3D" : "ZOBRAZENÍ: 2D"}
+        </button>
+        
+        <button 
           className="control-button" 
           onClick={toggleInfo}
         >
@@ -261,20 +295,20 @@ function App() {
       
       <div className="speed-controls">
         <button 
-          className={`speed-button ${autoplaySpeed === 500 ? 'active' : ''}`} 
-          onClick={() => changeAutoplaySpeed(500)}
+          className={`speed-button ${autoplaySpeed === 2000 ? 'active' : ''}`} 
+          onClick={() => changeAutoplaySpeed(2000)}
         >
           RYCHLE
         </button>
         <button 
-          className={`speed-button ${autoplaySpeed === 2000 ? 'active' : ''}`} 
-          onClick={() => changeAutoplaySpeed(2000)}
+          className={`speed-button ${autoplaySpeed === 5000 ? 'active' : ''}`} 
+          onClick={() => changeAutoplaySpeed(5000)}
         >
           STŘEDNÍ
         </button>
         <button 
-          className={`speed-button ${autoplaySpeed === 5000 ? 'active' : ''}`} 
-          onClick={() => changeAutoplaySpeed(5000)}
+          className={`speed-button ${autoplaySpeed === 10000 ? 'active' : ''}`} 
+          onClick={() => changeAutoplaySpeed(10000)}
         >
           POMALU
         </button>
