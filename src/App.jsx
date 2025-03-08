@@ -218,32 +218,8 @@ function App() {
       uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
     }
     
-    // Plynulý přechod mezi 2D a 3D režimem
-    if (viewMode === '3d') {
-      // Přechod z 3D do 2D - nastavíme kameru přímo před obrázek
-      gsap.to(cameraRef.current.position, {
-        duration: 1.0,
-        x: 0,
-        y: 0,
-        z: 8,
-        ease: "power2.inOut",
-        onComplete: () => {
-          setViewMode('2d');
-        }
-      });
-    } else {
-      // Přechod z 2D do 3D - vrátíme kameru do původní pozice
-      gsap.to(cameraRef.current.position, {
-        duration: 1.0,
-        x: 0,
-        y: 0,
-        z: 5,
-        ease: "power2.inOut",
-        onComplete: () => {
-          setViewMode('3d');
-        }
-      });
-    }
+    // Přepnutí režimu zobrazení
+    setViewMode(prev => prev === '3d' ? '2d' : '3d');
   };
 
   if (isLoading) {
@@ -261,7 +237,7 @@ function App() {
     <div className="app-container">
       <div className="canvas-container">
         <Canvas 
-          camera={{ position: [0, 0, 5], fov: 45, near: 0.1, far: 1000 }}
+          camera={{ position: [0, 0, 0], fov: 75, near: 0.1, far: 1000 }}
           gl={{ 
             antialias: true,
             alpha: true,
@@ -277,10 +253,10 @@ function App() {
                   enableZoom={true} 
                   enablePan={false}
                   maxDistance={10}
-                  minDistance={3}
+                  minDistance={0.1}
                   // Nastavení pro lepší pohled na oblohu
-                  minPolarAngle={Math.PI / 4} 
-                  maxPolarAngle={Math.PI * 3/4}
+                  minPolarAngle={0} 
+                  maxPolarAngle={Math.PI}
                   // Výchozí rotace kamery - pohled na oblohu
                   target={[0, 0, 0]}
                 />
@@ -292,13 +268,15 @@ function App() {
                 />
               )
             ) : (
-              // 2D režim - fixní kamera přímo před obrázkem
+              // 2D režim - fixní kamera s omezeným pohybem
               <OrbitControls 
                 enableZoom={false} 
                 enablePan={false}
-                enableRotate={false}
-                minDistance={8}
-                maxDistance={8}
+                enableRotate={true}
+                minPolarAngle={Math.PI / 2 - 0.1} 
+                maxPolarAngle={Math.PI / 2 + 0.1}
+                minAzimuthAngle={-0.1}
+                maxAzimuthAngle={0.1}
                 target={[0, 0, 0]}
               />
             )}

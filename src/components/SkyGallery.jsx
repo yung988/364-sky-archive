@@ -33,14 +33,6 @@ const SkyGallery = ({ currentDay, totalDays }) => {
   // Load the next day's texture for smooth transitions
   const nextTexture = useTexture(getImagePath(nextDay));
   
-  // Nastavení správného poměru stran pro obrázky
-  useEffect(() => {
-    if (texture && meshRef.current) {
-      const aspectRatio = texture.image.width / texture.image.height;
-      meshRef.current.scale.set(aspectRatio, 1, 1);
-    }
-  }, [texture]);
-  
   // Configure texture settings for maximální kvalitu
   useEffect(() => {
     if (texture) {
@@ -107,7 +99,8 @@ const SkyGallery = ({ currentDay, totalDays }) => {
         gl_FragColor = mix(color1, color2, mixRatio);
       }
     `,
-    transparent: true
+    transparent: true,
+    side: THREE.BackSide
   });
   
   // Update material uniforms on each frame
@@ -121,7 +114,7 @@ const SkyGallery = ({ currentDay, totalDays }) => {
   
   return (
     <mesh ref={meshRef} position={[0, 0, 0]}>
-      <planeGeometry args={[10, 10]} />
+      <sphereGeometry args={[20, 64, 64]} />
       <primitive object={material} attach="material" />
     </mesh>
   );
