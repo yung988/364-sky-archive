@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useTexture, shaderMaterial, Stars } from '@react-three/drei';
+import { useTexture, shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { extend } from '@react-three/fiber';
@@ -28,7 +28,6 @@ const SkyShaderMaterial = shaderMaterial(
     colorShift: 0.05,
     dayIndex: 0,
     sunPosition: new THREE.Vector3(0, 1, 0),
-    isDayTime: 1.0, // 1.0 for day, 0.0 for night
   },
   // Vertex shader
   `
@@ -53,13 +52,6 @@ const SkyShaderMaterial = shaderMaterial(
     uniform float colorShift;
     uniform float dayIndex;
     uniform vec3 sunPosition;
-    uniform float isDayTime;
-    
-    // Funkce pro generování hvězd
-    float stars(vec2 uv, float threshold) {
-      float noise = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
-      return step(threshold, noise) * noise;
-    }
     
     void main() {
       // Upravíme UV souřadnice tak, aby obloha byla nad námi
@@ -91,32 +83,9 @@ const SkyShaderMaterial = shaderMaterial(
       float sunDot = max(0.0, dot(normalizedPos, normalize(sunPosition)));
       sunEffect = pow(sunDot, 32.0) * 0.5;
       
-      // Hvězdy - viditelné pouze v noci
-      float starsEffect = 0.0;
-      if (isDayTime < 0.5) {
-        // Generujeme hvězdy různých velikostí
-        float stars1 = stars(vUv * 500.0, 0.996) * 0.5;
-        float stars2 = stars(vUv * 1000.0, 0.998) * 0.3;
-        float stars3 = stars(vUv * 2000.0, 0.999) * 0.2;
-        
-        // Hvězdy jsou jasnější v horní části oblohy
-        float starsGradient = smoothstep(0.0, 1.0, normalizedPos.y * 0.5 + 0.5);
-        starsEffect = (stars1 + stars2 + stars3) * starsGradient * (1.0 - isDayTime);
-      }
-      
       // Kombinace všech efektů
       vec3 finalColor = vec3(r, g, b) * vignette;
       finalColor += vec3(1.0, 0.9, 0.7) * sunEffect;
-      
-      // Přidáme hvězdy
-      finalColor += vec3(0.9, 0.95, 1.0) * starsEffect;
-      
-      // Přechod mezi dnem a nocí
-      finalColor = mix(
-        vec3(0.05, 0.05, 0.15), // Noční barva
-        finalColor,              // Denní barva
-        isDayTime
-      );
       
       gl_FragColor = vec4(finalColor, color.a);
     }
@@ -129,12 +98,10 @@ extend({ SkyShaderMaterial });
 const SkyGallery = ({ currentDay, totalDays }) => {
   const meshRef = useRef();
   const materialRef = useRef();
-  const starsRef = useRef();
   const { viewport, clock } = useThree();
   const [prevDay, setPrevDay] = useState(currentDay);
   const [transitionProgress, setTransitionProgress] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isDayTime, setIsDayTime] = useState(true);
   
   // Calculate next day
   const nextDay = (currentDay + 1) % totalDays;
@@ -194,22 +161,6 @@ const SkyGallery = ({ currentDay, totalDays }) => {
     );
   }, [currentDay, totalDays]);
   
-  // Determine if it's day or night based on sun position
-  useEffect(() => {
-    // Pokud je slunce pod horizontem, je noc
-    const isDay = sunPosition.y > 0;
-    
-    // Plynulý přechod mezi dnem a nocí
-    gsap.to({}, {
-      duration: 3.0,
-      onUpdate: function() {
-        const progress = this.progress();
-        setIsDayTime(isDay ? progress : 1 - progress);
-      },
-      ease: "power1.inOut"
-    });
-  }, [sunPosition]);
-  
   // Update shader uniforms on each frame
   useFrame((state, delta) => {
     if (materialRef.current) {
@@ -217,7 +168,6 @@ const SkyGallery = ({ currentDay, totalDays }) => {
       materialRef.current.uniforms.dayIndex.value = currentDay;
       materialRef.current.uniforms.transitionProgress.value = transitionProgress;
       materialRef.current.uniforms.sunPosition.value = sunPosition;
-      materialRef.current.uniforms.isDayTime.value = isDayTime ? 1.0 : 0.0;
       
       // Ensure textures are set
       if (texture) materialRef.current.uniforms.map.value = texture;
@@ -246,32 +196,18 @@ const SkyGallery = ({ currentDay, totalDays }) => {
           dayIndex={currentDay}
           transitionProgress={transitionProgress}
           sunPosition={sunPosition}
-          isDayTime={isDayTime ? 1.0 : 0.0}
         />
       </mesh>
-      
-      {/* Hvězdy pro noční oblohu */}
-      <group ref={starsRef}>
-        <Stars 
-          radius={19} 
-          depth={5} 
-          count={5000} 
-          factor={4} 
-          saturation={0.5} 
-          fade
-          speed={0.1}
-        />
-      </group>
       
       {/* Světlo simulující slunce */}
       <directionalLight 
         position={[sunPosition.x * 10, sunPosition.y * 10, sunPosition.z * 10]} 
-        intensity={isDayTime ? 1.5 : 0.1} 
-        color={isDayTime ? "#ffeecc" : "#334466"} 
+        intensity={1.5}
+        color="#ffeecc"
       />
       
       {/* Ambientní světlo pro základní osvětlení scény */}
-      <ambientLight intensity={isDayTime ? 0.3 : 0.05} color={isDayTime ? "#ffffff" : "#223344"} />
+      <ambientLight intensity={0.3} color="#ffffff" />
     </group>
   );
 };

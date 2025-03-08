@@ -10,7 +10,7 @@
 	<E K="Exp_Date" V="3600.000000" />
 	<E K="Exp_Format" V="JPEG" />
 	<E K="File_Size" V="945958" />
-	<E K="Height" V="1548" />
+	<E K="Height" V="1580" />
 	<E K="ImageClassification" V="19" />
 	<E K="MultiShotCount" V="0" />
 	<E K="MultiShotSequenceID" V="--" />
@@ -20,11 +20,13 @@
 	<E K="PixelWidth" V="0" />
 	<E K="UUID" V="05ABA906-C21F-4624-BC70-46AB0445768F" />
 	<E K="Version" V="1530" />
-	<E K="Width" V="1652" />
+	<E K="Width" V="1493" />
 	<VAR Engine="1300">
-		<E K="LowResProcessCounter" V="1" />
+		<E K="HighResProcessCounter" V="2" />
+		<E K="LowResProcessCounter" V="11" />
 		<E K="ProductID" V="FileSystemJpeg" />
-		<E K="UUID" V="47A1C833-BBF3-4353-B365-6A26DC354088" />
+		<E K="SyncProcessCounter" V="2" />
+		<E K="UUID" V="D47BC15E-8C37-4858-A227-1983CBEDF84B" />
 		<DL>
 			<E K="BlackRecovery" V="0" />
 			<E K="Brightness" V="0" />
@@ -86,6 +88,7 @@
 			<E K="Image_Scene" V="" />
 			<E K="LensAperture" V="0" />
 			<E K="LensChromaFringing" V="|||||" />
+			<E K="LensDiffractionCorrectionEnabled" V="0" />
 			<E K="LensFocalLength" V="0" />
 			<E K="LensLCCDustRemovalEnabled" V="0" />
 			<E K="LensLccLightFalloff" V="0" />
@@ -112,12 +115,51 @@
 			<E K="TechnicalProcessingMethod" V="0" />
 			<E K="UsmAmount" V="0" />
 			<E K="UsmHaloControl" V="0" />
+			<E K="UsmMethod" V="0" />
 			<E K="UsmRadius" V="0.800000011920929" />
 			<E K="UsmThreshold" V="1" />
 			<E K="Vignetting" V="0|1|0|1" />
 			<E K="WhiteBalance" V="1;1;1" />
 			<E K="WhiteRecovery" V="0" />
 		</DL>
-		<AL />
+		<AL>
+			<E K="BlackRecovery" V="0" />
+			<E K="Brightness" V="0" />
+			<E K="BwBlue" V="18.9268093109131" />
+			<E K="BwCyan" V="49.753288269043" />
+			<E K="BwEnabled" V="1" />
+			<E K="BwGreen" V="-1.26233553886414" />
+			<E K="BwMagenta" V="-100" />
+			<E K="BwRed" V="-40.8758239746094" />
+			<E K="BwYellow" V="18.0180912017822" />
+			<E K="CalculatedDehazeColor" V="0.0482742935419083;0.0452109277248383;0.0496130473911762" />
+			<E K="Contrast" V="11" />
+			<E K="DehazeLevelHigh" V="1;0.990938186645508;0.959867656230927" />
+			<E K="DehazeLevelLow" V="0.0251163505017757;0.0210178401321173;0.0245770644396544" />
+			<E K="Exposure" V="0.574835538864136" />
+			<E K="GeometryKeystoneAmount" V="100" />
+			<E K="GeometryKeystoneAspect" V="0" />
+			<E K="GeometryKeystoneSkew" V="0" />
+			<E K="GeometryKeystoneTiltX" V="-0.792265474796295" />
+			<E K="GeometryKeystoneTiltY" V="-0.00220049335621297" />
+			<E K="Highlight" V="1;1;1;0.781170725822449" />
+			<E K="HighlightRecoveryEx" V="-80" />
+			<E K="Midtone" V="0;0;0;0" />
+			<E K="Rotation" V="-0.158836364746094" />
+			<E K="Shadow" V="0;0;0;0.0757161378860474" />
+			<E K="ShadowRecovery" V="-31" />
+			<E K="WhiteBalance" V="0.990938246250153;1;1.03236961364746" />
+			<E K="WhiteRecovery" V="0" />
+		</AL>
+		<PHS>
+			<PH>
+				<E K="URL" V="file:///Users/jangajdos/Projects/work/mraky_yung/public/images/day_1%201.jpg" />
+				<E K="Date" V="1741447947.409503" />
+			</PH>
+			<PH>
+				<E K="URL" V="file:///Users/jangajdos/Projects/work/mraky_yung/public/images/psd/day_1.psd" />
+				<E K="Date" V="1741447947.563524" />
+			</PH>
+		</PHS>
 	</VAR>
 </IMG>

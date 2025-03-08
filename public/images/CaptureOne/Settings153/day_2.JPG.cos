@@ -4,11 +4,13 @@
 	<E K="Camera_Lens" V="-- mm f/--" />
 	<E K="Camera_Make" V="Canon" />
 	<E K="Camera_Model" V="CanoScan LiDE 400" />
+	<E K="Camera_Software" V="Capture One 23 Macintosh" />
 	<E K="CameraDisplayName" V="Jpeg File" />
 	<E K="Exp_ColorSpace" V="sRGB IEC61966-2.1" />
+	<E K="Exp_Date" V="3600.000000" />
 	<E K="Exp_Format" V="JPEG" />
 	<E K="File_Size" V="717047" />
-	<E K="Height" V="1605" />
+	<E K="Height" V="1635" />
 	<E K="ImageClassification" V="19" />
 	<E K="MultiShotCount" V="0" />
 	<E K="MultiShotSequenceID" V="--" />
@@ -18,11 +20,13 @@
 	<E K="PixelWidth" V="0" />
 	<E K="UUID" V="35B47DF8-73B7-44A8-96B2-EC9C017E762F" />
 	<E K="Version" V="1530" />
-	<E K="Width" V="1516" />
+	<E K="Width" V="1552" />
 	<VAR Engine="1300">
-		<E K="LowResProcessCounter" V="1" />
+		<E K="HighResProcessCounter" V="2" />
+		<E K="LowResProcessCounter" V="11" />
 		<E K="ProductID" V="FileSystemJpeg" />
-		<E K="UUID" V="90A3192E-DC17-404A-9A86-2DDD0BD7B1C6" />
+		<E K="SyncProcessCounter" V="1" />
+		<E K="UUID" V="6E2348CE-A20B-49A3-9070-C32B867D2450" />
 		<DL>
 			<E K="BlackRecovery" V="0" />
 			<E K="Brightness" V="0" />
@@ -83,6 +87,7 @@
 			<E K="Image_Scene" V="" />
 			<E K="LensAperture" V="0" />
 			<E K="LensChromaFringing" V="|||||" />
+			<E K="LensDiffractionCorrectionEnabled" V="0" />
 			<E K="LensFocalLength" V="0" />
 			<E K="LensLCCDustRemovalEnabled" V="0" />
 			<E K="LensLccLightFalloff" V="0" />
@@ -109,12 +114,51 @@
 			<E K="TechnicalProcessingMethod" V="0" />
 			<E K="UsmAmount" V="0" />
 			<E K="UsmHaloControl" V="0" />
+			<E K="UsmMethod" V="0" />
 			<E K="UsmRadius" V="0.800000011920929" />
 			<E K="UsmThreshold" V="1" />
 			<E K="Vignetting" V="0|1|0|1" />
 			<E K="WhiteBalance" V="1;1;1" />
 			<E K="WhiteRecovery" V="0" />
 		</DL>
-		<AL />
+		<AL>
+			<E K="BlackRecovery" V="0" />
+			<E K="Brightness" V="0" />
+			<E K="BwBlue" V="18.9268093109131" />
+			<E K="BwCyan" V="49.753288269043" />
+			<E K="BwEnabled" V="1" />
+			<E K="BwGreen" V="-1.26233553886414" />
+			<E K="BwMagenta" V="-100" />
+			<E K="BwRed" V="-40.8758239746094" />
+			<E K="BwYellow" V="18.0180912017822" />
+			<E K="CalculatedDehazeColor" V="0.0536726489663124;0.050063855946064;0.0545780435204506" />
+			<E K="Contrast" V="11" />
+			<E K="DehazeLevelHigh" V="1;0.990938186645508;0.959867656230927" />
+			<E K="DehazeLevelLow" V="0.0397955290973186;0.0331144370138645;0.0389307737350464" />
+			<E K="Exposure" V="0.574835538864136" />
+			<E K="GeometryKeystoneAmount" V="100" />
+			<E K="GeometryKeystoneAspect" V="0" />
+			<E K="GeometryKeystoneSkew" V="0" />
+			<E K="GeometryKeystoneTiltX" V="0.0142111061140895" />
+			<E K="GeometryKeystoneTiltY" V="-1.39647316932678" />
+			<E K="Highlight" V="1;1;1;0.781170725822449" />
+			<E K="HighlightRecoveryEx" V="-80" />
+			<E K="Midtone" V="0;0;0;0" />
+			<E K="Rotation" V="-0.582164943218231" />
+			<E K="Shadow" V="0;0;0;0.0757161378860474" />
+			<E K="ShadowRecovery" V="-31" />
+			<E K="WhiteBalance" V="0.990938246250153;1;1.03236961364746" />
+			<E K="WhiteRecovery" V="0" />
+		</AL>
+		<PHS>
+			<PH>
+				<E K="URL" V="file:///Users/jangajdos/Projects/work/mraky_yung/public/images/day_2%201.jpg" />
+				<E K="Date" V="1741447946.951354" />
+			</PH>
+			<PH>
+				<E K="URL" V="file:///Users/jangajdos/Projects/work/mraky_yung/public/images/psd/day_2.psd" />
+				<E K="Date" V="1741447947.161137" />
+			</PH>
+		</PHS>
 	</VAR>
 </IMG>
