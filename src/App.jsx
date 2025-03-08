@@ -44,6 +44,7 @@ function App() {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState('orbit'); // 'orbit' or 'fly'
   const [viewMode, setViewMode] = useState('3d'); // '3d' or '2d'
+  const [timeOfDay, setTimeOfDay] = useState('den'); // 'den' or 'noc'
   const totalDays = 364;
   
   // Audio references
@@ -112,6 +113,24 @@ function App() {
     }, 3000);
     return () => clearTimeout(timer);
   }, []);
+
+  // Funkce pro určení denní doby podle dne v roce
+  const determineTimeOfDay = (day) => {
+    // Jednoduchá simulace - polovina roku je den, polovina noc
+    // V reálné aplikaci by toto bylo složitější podle skutečné astronomické pozice
+    const dayProgress = day / totalDays;
+    const sunPosition = Math.sin(Math.PI * 2 * dayProgress);
+    
+    // Aktualizujeme stav denní doby
+    setTimeOfDay(sunPosition > 0 ? 'den' : 'noc');
+    
+    return sunPosition > 0;
+  };
+  
+  // Aktualizace denní doby při změně dne
+  useEffect(() => {
+    determineTimeOfDay(currentDay);
+  }, [currentDay]);
 
   const handleDayChange = (day) => {
     // Only change if it's a different day
@@ -250,6 +269,7 @@ function App() {
       </div>
       
       <div className="counter">DEN {currentDay + 1} / {totalDays}</div>
+      <div className={`time-of-day ${timeOfDay}`}>{timeOfDay.toUpperCase()}</div>
       
       <Timeline 
         currentDay={currentDay} 
@@ -338,8 +358,14 @@ function App() {
             buď orbitální pohyb kolem středu (ORBIT) nebo volný pohyb v prostoru (LET).
           </p>
           <p>
+            Aplikace nyní simuluje přirozený přechod mezi dnem a nocí podle pozice slunce. V noci se 
+            objeví hvězdy a obloha ztmavne, zatímco během dne uvidíte jasnou modrou oblohu. Tento 
+            cyklus se mění v závislosti na vybraném dni v roce.
+          </p>
+          <p>
             Projekt využívá React Three Fiber pro vytvoření imerzivního 3D prostředí, kde jsou obrázky 
-            prezentovány jako textura na sféře obklopující pozorovatele.
+            prezentovány jako textura na sféře obklopující pozorovatele, což vytváří dojem, že ležíte 
+            na trávě a díváte se na oblohu nad vámi.
           </p>
         </div>
       </div>

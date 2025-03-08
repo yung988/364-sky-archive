@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useTexture, shaderMaterial } from '@react-three/drei';
+import { useTexture, shaderMaterial, Stars, Cloud } from '@react-three/drei';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { extend } from '@react-three/fiber';
@@ -27,7 +27,8 @@ const SkyShaderMaterial = shaderMaterial(
     distortionIntensity: 0.1,
     colorShift: 0.05,
     dayIndex: 0,
-    sunPosition: new THREE.Vector3(0, 1, 0)
+    sunPosition: new THREE.Vector3(0, 1, 0),
+    isDayTime: 1.0, // 1.0 for day, 0.0 for night
   },
   // Vertex shader
   `
@@ -52,10 +53,16 @@ const SkyShaderMaterial = shaderMaterial(
     uniform float colorShift;
     uniform float dayIndex;
     uniform vec3 sunPosition;
+    uniform float isDayTime;
+    
+    // Funkce pro generování hvězd
+    float stars(vec2 uv, float threshold) {
+      float noise = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
+      return step(threshold, noise) * noise;
+    }
     
     void main() {
       // Upravíme UV souřadnice tak, aby obloha byla nad námi
-      // Chceme, aby obloha byla vidět hlavně nad námi, takže upravíme mapování textury
       vec2 uv = vUv;
       
       // Jemná distorze pro přirozenější vzhled
@@ -84,9 +91,32 @@ const SkyShaderMaterial = shaderMaterial(
       float sunDot = max(0.0, dot(normalizedPos, normalize(sunPosition)));
       sunEffect = pow(sunDot, 32.0) * 0.5;
       
+      // Hvězdy - viditelné pouze v noci
+      float starsEffect = 0.0;
+      if (isDayTime < 0.5) {
+        // Generujeme hvězdy různých velikostí
+        float stars1 = stars(vUv * 500.0, 0.996) * 0.5;
+        float stars2 = stars(vUv * 1000.0, 0.998) * 0.3;
+        float stars3 = stars(vUv * 2000.0, 0.999) * 0.2;
+        
+        // Hvězdy jsou jasnější v horní části oblohy
+        float starsGradient = smoothstep(0.0, 1.0, normalizedPos.y * 0.5 + 0.5);
+        starsEffect = (stars1 + stars2 + stars3) * starsGradient * (1.0 - isDayTime);
+      }
+      
       // Kombinace všech efektů
       vec3 finalColor = vec3(r, g, b) * vignette;
       finalColor += vec3(1.0, 0.9, 0.7) * sunEffect;
+      
+      // Přidáme hvězdy
+      finalColor += vec3(0.9, 0.95, 1.0) * starsEffect;
+      
+      // Přechod mezi dnem a nocí
+      finalColor = mix(
+        vec3(0.05, 0.05, 0.15), // Noční barva
+        finalColor,              // Denní barva
+        isDayTime
+      );
       
       gl_FragColor = vec4(finalColor, color.a);
     }
@@ -100,10 +130,13 @@ const SkyGallery = ({ currentDay, totalDays }) => {
   const meshRef = useRef();
   const materialRef = useRef();
   const groundRef = useRef();
+  const starsRef = useRef();
+  const cloudsRef = useRef([]);
   const { viewport, clock } = useThree();
   const [prevDay, setPrevDay] = useState(currentDay);
   const [transitionProgress, setTransitionProgress] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isDayTime, setIsDayTime] = useState(true);
   
   // Calculate next day
   const nextDay = (currentDay + 1) % totalDays;
@@ -163,6 +196,48 @@ const SkyGallery = ({ currentDay, totalDays }) => {
     );
   }, [currentDay, totalDays]);
   
+  // Determine if it's day or night based on sun position
+  useEffect(() => {
+    // Pokud je slunce pod horizontem, je noc
+    const isDay = sunPosition.y > 0;
+    
+    // Plynulý přechod mezi dnem a nocí
+    gsap.to({}, {
+      duration: 3.0,
+      onUpdate: function() {
+        const progress = this.progress();
+        setIsDayTime(isDay ? progress : 1 - progress);
+      },
+      ease: "power1.inOut"
+    });
+  }, [sunPosition]);
+  
+  // Generujeme náhodné pozice pro mraky
+  const cloudPositions = useMemo(() => {
+    const positions = [];
+    const count = 12; // Počet mraků
+    
+    for (let i = 0; i < count; i++) {
+      // Náhodná pozice na obloze
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.random() * Math.PI * 0.5 + Math.PI * 0.2; // Mraky jsou hlavně nad horizontem
+      const radius = 15 + Math.random() * 3; // Vzdálenost od středu
+      
+      const x = radius * Math.sin(phi) * Math.cos(theta);
+      const y = radius * Math.sin(phi) * Math.sin(theta);
+      const z = radius * Math.cos(phi);
+      
+      // Náhodná velikost a rychlost
+      const size = 3 + Math.random() * 5;
+      const speed = 0.01 + Math.random() * 0.02;
+      const opacity = 0.5 + Math.random() * 0.5;
+      
+      positions.push({ position: [x, y, z], size, speed, theta, radius, opacity });
+    }
+    
+    return positions;
+  }, []);
+  
   // Update shader uniforms on each frame
   useFrame((state, delta) => {
     if (materialRef.current) {
@@ -170,6 +245,7 @@ const SkyGallery = ({ currentDay, totalDays }) => {
       materialRef.current.uniforms.dayIndex.value = currentDay;
       materialRef.current.uniforms.transitionProgress.value = transitionProgress;
       materialRef.current.uniforms.sunPosition.value = sunPosition;
+      materialRef.current.uniforms.isDayTime.value = isDayTime ? 1.0 : 0.0;
       
       // Ensure textures are set
       if (texture) materialRef.current.uniforms.map.value = texture;
@@ -185,6 +261,28 @@ const SkyGallery = ({ currentDay, totalDays }) => {
     if (groundRef.current) {
       groundRef.current.rotation.y += delta * 0.01;
     }
+    
+    // Aktualizace pozic mraků
+    cloudsRef.current.forEach((cloud, index) => {
+      if (cloud && cloudPositions[index]) {
+        const { theta, radius, speed } = cloudPositions[index];
+        const newTheta = theta + delta * speed;
+        
+        const x = radius * Math.sin(cloudPositions[index].position[2]) * Math.cos(newTheta);
+        const y = radius * Math.sin(cloudPositions[index].position[2]) * Math.sin(newTheta);
+        
+        cloud.position.x = x;
+        cloud.position.y = y;
+        
+        // Aktualizujeme theta pro další snímek
+        cloudPositions[index].theta = newTheta;
+        
+        // Mraky jsou méně viditelné v noci
+        if (cloud.material) {
+          cloud.material.opacity = cloudPositions[index].opacity * (isDayTime ? 1.0 : 0.3);
+        }
+      }
+    });
   });
   
   return (
@@ -214,18 +312,47 @@ const SkyGallery = ({ currentDay, totalDays }) => {
           dayIndex={currentDay}
           transitionProgress={transitionProgress}
           sunPosition={sunPosition}
+          isDayTime={isDayTime ? 1.0 : 0.0}
         />
       </mesh>
+      
+      {/* Mraky */}
+      {cloudPositions.map((cloudData, index) => (
+        <Cloud
+          key={index}
+          ref={(el) => (cloudsRef.current[index] = el)}
+          position={cloudData.position}
+          args={[cloudData.size, 2]}
+          opacity={cloudData.opacity}
+          speed={0}
+          width={cloudData.size}
+          depth={1.5}
+          segments={20}
+        />
+      ))}
+      
+      {/* Hvězdy pro noční oblohu */}
+      <group ref={starsRef}>
+        <Stars 
+          radius={19} 
+          depth={5} 
+          count={5000} 
+          factor={4} 
+          saturation={0.5} 
+          fade
+          speed={0.1}
+        />
+      </group>
       
       {/* Světlo simulující slunce */}
       <directionalLight 
         position={[sunPosition.x * 10, sunPosition.y * 10, sunPosition.z * 10]} 
-        intensity={1.5} 
-        color="#ffeecc" 
+        intensity={isDayTime ? 1.5 : 0.1} 
+        color={isDayTime ? "#ffeecc" : "#334466"} 
       />
       
       {/* Ambientní světlo pro základní osvětlení scény */}
-      <ambientLight intensity={0.3} />
+      <ambientLight intensity={isDayTime ? 0.3 : 0.05} color={isDayTime ? "#ffffff" : "#223344"} />
     </group>
   );
 };

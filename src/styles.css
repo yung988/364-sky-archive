@@ -111,23 +111,53 @@ body, html {
 /* Counter */
 .counter {
   position: absolute;
-  top: 30px;
-  left: 30px;
-  font-size: 18px;
-  font-weight: bold;
-  z-index: 10;
+  top: 20px;
+  left: 20px;
   background-color: rgba(0, 0, 0, 0.5);
-  padding: 10px 15px;
+  color: white;
+  padding: 8px 12px;
   border-radius: 4px;
-  letter-spacing: 1px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 10;
 }
 
-.counter:hover {
-  background-color: rgba(0, 0, 0, 0.7);
-  transform: translateY(-2px);
+/* Time of Day Indicator */
+.time-of-day {
+  position: absolute;
+  top: 20px;
+  left: 150px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 10;
+  transition: background-color 0.5s ease;
+}
+
+/* Styling for day/night states */
+.time-of-day:before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Day indicator */
+.time-of-day.den:before {
+  background-color: #ffcc33;
+  box-shadow: 0 0 10px 2px rgba(255, 204, 51, 0.7);
+}
+
+/* Night indicator */
+.time-of-day.noc:before {
+  background-color: #3366cc;
+  box-shadow: 0 0 10px 2px rgba(51, 102, 204, 0.7);
 }
 
 /* Timeline container */
