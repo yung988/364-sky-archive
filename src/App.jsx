@@ -271,7 +271,6 @@ function App() {
       </div>
       
       <div className="counter">DEN {currentDay + 1} / {totalDays}</div>
-      <div className={`time-of-day ${timeOfDay}`}>{timeOfDay.toUpperCase()}</div>
       
       <Timeline 
         currentDay={currentDay} 
