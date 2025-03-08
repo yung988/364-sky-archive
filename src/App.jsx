@@ -218,8 +218,8 @@ function App() {
                 maxDistance={10}
                 minDistance={0.1}
                 // Omezit rotaci, aby byl pohled vždy nahoru
-                minPolarAngle={Math.PI / 2 - 0.2} // Omezit pohled dolů
-                maxPolarAngle={Math.PI / 2 + 0.2} // Omezit pohled nahoru
+                minPolarAngle={Math.PI / 2 - 0.5} // Omezit pohled dolů
+                maxPolarAngle={Math.PI} // Umožnit pohled nahoru
               />
             ) : (
               <FlyControls 
