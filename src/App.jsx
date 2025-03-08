@@ -227,23 +227,25 @@ function App() {
   return (
     <div className="app-container">
       <div className="canvas-container" style={{ display: viewMode === '3d' ? 'block' : 'none' }}>
-        <Canvas camera={{ position: [0, 0, 0], fov: 75, up: [0, 0, 1] }}>
+        <Canvas camera={{ position: [0, 0.5, 5], fov: 70, up: [0, 1, 0] }}>
           <Suspense fallback={<Loader />}>
             <SkyGallery currentDay={currentDay} totalDays={totalDays} />
             {cameraMode === 'orbit' ? (
               <OrbitControls 
                 enableZoom={true} 
-                enablePan={true}
-                maxDistance={10}
-                minDistance={0.1}
-                // Omezit rotaci, aby byl pohled vždy nahoru
-                minPolarAngle={Math.PI / 2 - 0.5} // Omezit pohled dolů
-                maxPolarAngle={Math.PI} // Umožnit pohled nahoru
+                enablePan={false}
+                maxDistance={15}
+                minDistance={2}
+                // Omezit rotaci, aby byl pohled vždy nahoru a uživatel nemohl "propadnout" pod zem
+                minPolarAngle={Math.PI * 0.1} // Omezit pohled dolů
+                maxPolarAngle={Math.PI * 0.45} // Omezit pohled nahoru
+                // Výchozí pozice kamery - pohled na oblohu
+                target={[0, 5, 0]}
               />
             ) : (
               <FlyControls 
-                movementSpeed={5}
-                rollSpeed={0.5}
+                movementSpeed={3}
+                rollSpeed={0.3}
                 dragToLook={true}
               />
             )}

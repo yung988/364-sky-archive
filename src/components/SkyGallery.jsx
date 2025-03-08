@@ -138,6 +138,19 @@ const SkyGallery = ({ currentDay, totalDays }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isDayTime, setIsDayTime] = useState(true);
   
+  // Načtení textury trávy
+  const grassTexture = useTexture('/textures/grass.jpg');
+  
+  // Konfigurace textury trávy
+  useEffect(() => {
+    if (grassTexture) {
+      grassTexture.wrapS = grassTexture.wrapT = THREE.RepeatWrapping;
+      grassTexture.repeat.set(20, 20);
+      grassTexture.anisotropy = 16;
+      grassTexture.encoding = THREE.sRGBEncoding;
+    }
+  }, [grassTexture]);
+  
   // Calculate next day
   const nextDay = (currentDay + 1) % totalDays;
   
@@ -215,24 +228,24 @@ const SkyGallery = ({ currentDay, totalDays }) => {
   // Generujeme náhodné pozice pro mraky
   const cloudPositions = useMemo(() => {
     const positions = [];
-    const count = 12; // Počet mraků
+    const count = 25; // Zvýšený počet mraků pro lepší pokrytí oblohy
     
     for (let i = 0; i < count; i++) {
-      // Náhodná pozice na obloze
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.random() * Math.PI * 0.5 + Math.PI * 0.2; // Mraky jsou hlavně nad horizontem
-      const radius = 15 + Math.random() * 3; // Vzdálenost od středu
+      // Rovnoměrnější rozložení mraků po celé obloze
+      const theta = (i / count) * Math.PI * 2 + Math.random() * 0.5; // Rovnoměrnější rozložení + trochu náhody
+      const phi = Math.random() * Math.PI * 0.4 + Math.PI * 0.1; // Mraky jsou hlavně nad horizontem
+      const radius = 18 + Math.random() * 1.5; // Vzdálenost od středu - blíže ke kopuli oblohy
       
       const x = radius * Math.sin(phi) * Math.cos(theta);
       const y = radius * Math.sin(phi) * Math.sin(theta);
       const z = radius * Math.cos(phi);
       
-      // Náhodná velikost a rychlost
-      const size = 3 + Math.random() * 5;
-      const speed = 0.01 + Math.random() * 0.02;
-      const opacity = 0.5 + Math.random() * 0.5;
+      // Náhodná velikost a MNOHEM POMALEJŠÍ rychlost
+      const size = 4 + Math.random() * 6; // Větší mraky
+      const speed = 0.0005 + Math.random() * 0.001; // Výrazně snížená rychlost
+      const opacity = 0.6 + Math.random() * 0.4;
       
-      positions.push({ position: [x, y, z], size, speed, theta, radius, opacity });
+      positions.push({ position: [x, y, z], size, speed, theta, radius, phi, opacity });
     }
     
     return positions;
@@ -254,25 +267,28 @@ const SkyGallery = ({ currentDay, totalDays }) => {
     
     if (meshRef.current) {
       // Velmi jemná rotace - simuluje pohyb oblohy
-      meshRef.current.rotation.y += delta * 0.005;
+      meshRef.current.rotation.y += delta * 0.001; // Pomalejší rotace oblohy
     }
     
     // Rotace země - simuluje otáčení Země
     if (groundRef.current) {
-      groundRef.current.rotation.y += delta * 0.01;
+      groundRef.current.rotation.y += delta * 0.002; // Pomalejší rotace země
     }
     
     // Aktualizace pozic mraků
     cloudsRef.current.forEach((cloud, index) => {
       if (cloud && cloudPositions[index]) {
-        const { theta, radius, speed } = cloudPositions[index];
+        const { theta, radius, speed, phi } = cloudPositions[index];
         const newTheta = theta + delta * speed;
         
-        const x = radius * Math.sin(cloudPositions[index].position[2]) * Math.cos(newTheta);
-        const y = radius * Math.sin(cloudPositions[index].position[2]) * Math.sin(newTheta);
+        // Správný výpočet pozice na sféře
+        const x = radius * Math.sin(phi) * Math.cos(newTheta);
+        const y = radius * Math.sin(phi) * Math.sin(newTheta);
+        const z = radius * Math.cos(phi);
         
         cloud.position.x = x;
         cloud.position.y = y;
+        cloud.position.z = z;
         
         // Aktualizujeme theta pro další snímek
         cloudPositions[index].theta = newTheta;
@@ -287,16 +303,54 @@ const SkyGallery = ({ currentDay, totalDays }) => {
   
   return (
     <group>
-      {/* Země pod námi */}
-      <mesh ref={groundRef} position={[0, -10, 0]}>
-        <sphereGeometry args={[9.9, 32, 32]} />
+      {/* Země pod námi - upravená jako skutečný povrch */}
+      <mesh ref={groundRef} position={[0, -1.5, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[100, 100]} />
         <meshStandardMaterial 
-          color="#2a6e12" 
-          roughness={0.8}
-          metalness={0.1}
-          map={null}
+          color="#4a8c32" 
+          roughness={0.9}
+          metalness={0.0}
+          map={grassTexture}
         />
       </mesh>
+      
+      {/* Přidáme několik detailů na zem - kameny, květiny atd. */}
+      <group position={[2, -1.45, 3]}>
+        <mesh>
+          <boxGeometry args={[0.5, 0.1, 0.4]} />
+          <meshStandardMaterial color="#888888" roughness={0.8} />
+        </mesh>
+      </group>
+      
+      <group position={[-3, -1.45, 2]}>
+        <mesh>
+          <sphereGeometry args={[0.3, 8, 8]} />
+          <meshStandardMaterial color="#777777" roughness={0.9} />
+        </mesh>
+      </group>
+      
+      {/* Několik květin */}
+      {[...Array(15)].map((_, i) => {
+        const x = Math.random() * 20 - 10;
+        const z = Math.random() * 20 - 10;
+        const height = 0.2 + Math.random() * 0.3;
+        const color = Math.random() > 0.5 ? "#ffff00" : "#ffffff";
+        
+        return (
+          <group key={i} position={[x, -1.45, z]}>
+            {/* Stonek */}
+            <mesh position={[0, height/2, 0]}>
+              <boxGeometry args={[0.05, height, 0.05]} />
+              <meshStandardMaterial color="#2a6e12" />
+            </mesh>
+            {/* Květ */}
+            <mesh position={[0, height, 0]}>
+              <sphereGeometry args={[0.1, 8, 8]} />
+              <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.2} />
+            </mesh>
+          </group>
+        );
+      })}
       
       {/* Obloha kolem nás */}
       <mesh ref={meshRef}>
