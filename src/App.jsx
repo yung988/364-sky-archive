@@ -1,26 +1,108 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, Stars, useProgress, Html, FlyControls } from '@react-three/drei';
 import SkyGallery from './components/SkyGallery';
 import Timeline from './components/Timeline';
+import { gsap } from 'gsap';
 import './styles.css';
+
+// Loader component
+function Loader() {
+  const { progress } = useProgress();
+  const progressRef = useRef(null);
+  
+  useEffect(() => {
+    if (progressRef.current) {
+      gsap.to(progressRef.current, {
+        width: `${progress}%`,
+        duration: 0.5,
+        ease: "power1.out"
+      });
+    }
+  }, [progress]);
+  
+  return (
+    <Html center>
+      <div className="loader">
+        <div className="loader-spinner"></div>
+        <div className="loader-text">NAČÍTÁNÍ VOLUMETRICKÝCH OBLOH</div>
+        <div className="loader-progress-container">
+          <div className="loader-progress" ref={progressRef}></div>
+        </div>
+        <div className="loader-percentage">{progress.toFixed(0)}%</div>
+      </div>
+    </Html>
+  );
+}
 
 function App() {
   const [currentDay, setCurrentDay] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [autoplay, setAutoplay] = useState(false);
+  const [autoplaySpeed, setAutoplaySpeed] = useState(2000); // ms between days
+  const [showInfo, setShowInfo] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [cameraMode, setCameraMode] = useState('orbit'); // 'orbit' or 'fly'
   const totalDays = 364;
+  
+  // Audio references
+  const ambientSoundRef = useRef(null);
+  const transitionSoundRef = useRef(null);
+  const uiClickSoundRef = useRef(null);
+  
+  // Initialize sounds
+  useEffect(() => {
+    // Create ambient background sound
+    const ambientSound = new Audio('/sounds/ambient.mp3');
+    ambientSound.loop = true;
+    ambientSound.volume = 0.3;
+    ambientSoundRef.current = ambientSound;
+    
+    // Create transition sound
+    const transitionSound = new Audio('/sounds/transition.mp3');
+    transitionSound.volume = 0.5;
+    transitionSoundRef.current = transitionSound;
+    
+    // Create UI click sound
+    const uiClickSound = new Audio('/sounds/click.mp3');
+    uiClickSound.volume = 0.2;
+    uiClickSoundRef.current = uiClickSound;
+    
+    // Cleanup on unmount
+    return () => {
+      if (ambientSoundRef.current) {
+        ambientSoundRef.current.pause();
+      }
+    };
+  }, []);
+  
+  // Toggle sound
+  useEffect(() => {
+    if (soundEnabled && ambientSoundRef.current) {
+      ambientSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+    } else if (ambientSoundRef.current) {
+      ambientSoundRef.current.pause();
+    }
+  }, [soundEnabled]);
 
   // Handle autoplay functionality
   useEffect(() => {
     let interval;
     if (autoplay) {
       interval = setInterval(() => {
-        setCurrentDay((prev) => (prev + 1) % totalDays);
-      }, 2000); // Change image every 2 seconds
+        setCurrentDay((prev) => {
+          const nextDay = (prev + 1) % totalDays;
+          // Play transition sound if enabled
+          if (soundEnabled && transitionSoundRef.current) {
+            transitionSoundRef.current.currentTime = 0;
+            transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+          }
+          return nextDay;
+        });
+      }, autoplaySpeed);
     }
     return () => clearInterval(interval);
-  }, [autoplay, totalDays]);
+  }, [autoplay, totalDays, autoplaySpeed, soundEnabled]);
 
   // Simulate loading
   useEffect(() => {
@@ -31,19 +113,75 @@ function App() {
   }, []);
 
   const handleDayChange = (day) => {
-    setCurrentDay(day);
+    if (day !== currentDay) {
+      setCurrentDay(day);
+      // Play transition sound if enabled
+      if (soundEnabled && transitionSoundRef.current) {
+        transitionSoundRef.current.currentTime = 0;
+        transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+      }
+    }
+    
     if (autoplay) setAutoplay(false);
   };
 
   const toggleAutoplay = () => {
+    // Play UI click sound
+    if (uiClickSoundRef.current) {
+      uiClickSoundRef.current.currentTime = 0;
+      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+    }
+    
     setAutoplay(!autoplay);
+  };
+  
+  const toggleSound = () => {
+    setSoundEnabled(!soundEnabled);
+    
+    // Play UI click sound if enabling sound
+    if (!soundEnabled && uiClickSoundRef.current) {
+      uiClickSoundRef.current.currentTime = 0;
+      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+    }
+  };
+  
+  const toggleCameraMode = () => {
+    // Play UI click sound
+    if (soundEnabled && uiClickSoundRef.current) {
+      uiClickSoundRef.current.currentTime = 0;
+      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+    }
+    
+    setCameraMode(prev => prev === 'orbit' ? 'fly' : 'orbit');
+  };
+  
+  const toggleInfo = () => {
+    // Play UI click sound
+    if (soundEnabled && uiClickSoundRef.current) {
+      uiClickSoundRef.current.currentTime = 0;
+      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+    }
+    
+    setShowInfo(!showInfo);
+  };
+  
+  const changeAutoplaySpeed = (speed) => {
+    // Play UI click sound
+    if (soundEnabled && uiClickSoundRef.current) {
+      uiClickSoundRef.current.currentTime = 0;
+      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+    }
+    
+    setAutoplaySpeed(speed);
   };
 
   if (isLoading) {
     return (
-      <div className="loader">
-        <div className="loader-spinner"></div>
-        <div className="loader-text">NAČÍTÁNÍ VOLUMETRICKÝCH OBLOH</div>
+      <div className="loader-container">
+        <div className="loader">
+          <div className="loader-spinner"></div>
+          <div className="loader-text">NAČÍTÁNÍ VOLUMETRICKÝCH OBLOH</div>
+        </div>
       </div>
     );
   }
@@ -52,10 +190,33 @@ function App() {
     <div className="app-container">
       <div className="canvas-container">
         <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} />
-          <SkyGallery currentDay={currentDay} totalDays={totalDays} />
-          <OrbitControls enableZoom={true} enablePan={true} />
+          <Suspense fallback={<Loader />}>
+            <ambientLight intensity={0.5} />
+            <pointLight position={[10, 10, 10]} />
+            <SkyGallery currentDay={currentDay} totalDays={totalDays} />
+            {cameraMode === 'orbit' ? (
+              <OrbitControls 
+                enableZoom={true} 
+                enablePan={true}
+                maxDistance={15}
+                minDistance={3}
+              />
+            ) : (
+              <FlyControls 
+                movementSpeed={5}
+                rollSpeed={0.5}
+                dragToLook={true}
+              />
+            )}
+            <Stars 
+              radius={100} 
+              depth={50} 
+              count={5000} 
+              factor={4} 
+              saturation={0} 
+              fade 
+            />
+          </Suspense>
         </Canvas>
       </div>
       
@@ -67,11 +228,105 @@ function App() {
         onDayChange={handleDayChange} 
       />
       
-      <button className="autoplay-button" onClick={toggleAutoplay}>
-        {autoplay ? "ZASTAVIT" : "PŘEHRÁT"}
+      <div className="controls">
+        <button 
+          className={`control-button ${autoplay ? 'active' : ''}`} 
+          onClick={toggleAutoplay}
+        >
+          {autoplay ? "ZASTAVIT" : "PŘEHRÁT"}
+        </button>
+        
+        <button 
+          className={`control-button ${soundEnabled ? 'active' : ''}`} 
+          onClick={toggleSound}
+        >
+          {soundEnabled ? "ZVUK: ZAP" : "ZVUK: VYP"}
+        </button>
+        
+        <button 
+          className="control-button" 
+          onClick={toggleCameraMode}
+        >
+          {cameraMode === 'orbit' ? "KAMERA: ORBIT" : "KAMERA: LET"}
+        </button>
+        
+        <button 
+          className="control-button" 
+          onClick={toggleInfo}
+        >
+          INFO
+        </button>
+      </div>
+      
+      <div className="speed-controls">
+        <button 
+          className={`speed-button ${autoplaySpeed === 500 ? 'active' : ''}`} 
+          onClick={() => changeAutoplaySpeed(500)}
+        >
+          RYCHLE
+        </button>
+        <button 
+          className={`speed-button ${autoplaySpeed === 2000 ? 'active' : ''}`} 
+          onClick={() => changeAutoplaySpeed(2000)}
+        >
+          STŘEDNÍ
+        </button>
+        <button 
+          className={`speed-button ${autoplaySpeed === 5000 ? 'active' : ''}`} 
+          onClick={() => changeAutoplaySpeed(5000)}
+        >
+          POMALU
+        </button>
+      </div>
+      
+      <button 
+        className="info-button" 
+        onClick={toggleInfo}
+      >
+        <span className="info-icon">i</span>
       </button>
+      
+      <div className={`info-panel ${showInfo ? 'visible' : ''}`}>
+        <div className="info-title">364 — ARCHIV OBLOH</div>
+        <div className="info-content">
+          <p>
+            Tato umělecká instalace zobrazuje 364 obrázků oblohy kreslených každý den v průběhu roku.
+          </p>
+          <p>
+            Použijte časovou osu ve spodní části obrazovky pro navigaci mezi dny. Tlačítko "PŘEHRÁT" 
+            spustí automatické procházení obrázků. Rychlost přehrávání můžete změnit pomocí tlačítek 
+            v levém dolním rohu.
+          </p>
+          <p>
+            Pomocí myši můžete otáčet pohledem v 3D prostoru. Přepínání mezi režimy kamery vám umožní 
+            buď orbitální pohyb kolem středu (ORBIT) nebo volný pohyb v prostoru (LET).
+          </p>
+          <p>
+            Projekt využívá React Three Fiber pro vytvoření imerzivního 3D prostředí, kde jsou obrázky 
+            prezentovány jako textura na sféře obklopující pozorovatele.
+          </p>
+        </div>
+      </div>
+      
+      {/* Audio elements */}
+      <audio id="ambient-sound" loop preload="auto">
+        <source src="/sounds/ambient.mp3" type="audio/mp3" />
+      </audio>
+      <audio id="transition-sound" preload="auto">
+        <source src="/sounds/transition.mp3" type="audio/mp3" />
+      </audio>
+      <audio id="ui-click-sound" preload="auto">
+        <source src="/sounds/click.mp3" type="audio/mp3" />
+      </audio>
     </div>
   );
 }
+
+// Import FlyControls dynamically to avoid SSR issues
+const FlyControls = React.lazy(() => 
+  import('@react-three/drei').then(module => {
+    return { default: module.FlyControls };
+  })
+);
 
 export default App; 
