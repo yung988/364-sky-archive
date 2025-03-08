@@ -56,38 +56,40 @@ body, html {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 30px;
 }
 
 .loader-spinner {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   border-top-color: rgba(255, 255, 255, 0.8);
-  animation: spin 1.2s ease-in-out infinite;
-  opacity: 0.8;
+  animation: spin 1.5s ease-out infinite;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
 }
 
 .loader-progress-container {
-  width: 200px;
-  height: 2px;
+  width: 240px;
+  height: 1px;
   background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
+  border-radius: 0;
   overflow: hidden;
+  margin-top: 10px;
 }
 
 .loader-progress {
   height: 100%;
-  background: linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.9) 100%);
+  background-color: rgba(255, 255, 255, 0.7);
   width: 0%;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .loader-percentage {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 300;
-  letter-spacing: 1px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 3px;
+  margin-top: -20px;
 }
 
 @keyframes spin {
@@ -97,37 +99,32 @@ body, html {
 }
 
 .loader-text {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
   text-align: center;
   max-width: 80%;
+  letter-spacing: 3px;
   font-weight: 300;
-  letter-spacing: 1px;
 }
 
 /* Counter */
 .counter {
   position: absolute;
-  top: 30px;
-  left: 30px;
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
-  background-color: rgba(255, 255, 255, 0.08);
-  padding: 10px 20px;
-  border-radius: 40px;
-  backdrop-filter: blur(10px);
+  top: 40px;
+  left: 40px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: transparent;
+  padding: 0;
   z-index: 10;
-  letter-spacing: 1.5px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  letter-spacing: 3px;
   font-weight: 300;
+  opacity: 0.7;
+  transition: opacity 0.5s ease;
 }
 
 .counter:hover {
-  background-color: rgba(255, 255, 255, 0.12);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15), 0 0 15px rgba(255, 255, 255, 0.1);
+  opacity: 1;
 }
 
 /* Time of Day Indicator */
@@ -171,105 +168,96 @@ body, html {
 /* Timeline container */
 .timeline-container {
   position: absolute;
-  bottom: 30px;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80%;
+  width: 70%;
   z-index: 10;
 }
 
 /* Timeline */
 .timeline {
   width: 100%;
-  height: 2px;
-  background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.2);
   position: relative;
   cursor: pointer;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .timeline:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  height: 3px;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .timeline-progress {
   height: 100%;
-  background: linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.7) 100%);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.5);
   position: absolute;
   top: 0;
   left: 0;
-  transition: width 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 .timeline-marker {
-  width: 10px;
-  height: 10px;
-  background-color: rgba(255, 255, 255, 0.8);
+  width: 4px;
+  height: 4px;
+  background-color: #fff;
   border-radius: 50%;
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
   cursor: pointer;
   z-index: 2;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
 }
 
 .timeline-marker:hover {
-  width: 14px;
-  height: 14px;
-  background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  width: 8px;
+  height: 8px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
 }
 
 .timeline-marker-label {
   position: absolute;
-  bottom: 20px;
+  bottom: 15px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
   opacity: 0;
-  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: opacity 0.3s ease, bottom 0.3s ease;
   white-space: nowrap;
-  background-color: rgba(255, 255, 255, 0.08);
-  padding: 4px 10px;
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   font-weight: 300;
 }
 
 .timeline-marker:hover .timeline-marker-label {
   opacity: 1;
-  bottom: 25px;
+  bottom: 20px;
 }
 
 .timeline-ripple {
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   transform: translate(-50%, -50%);
-  animation: ripple 2s infinite cubic-bezier(0.19, 1, 0.22, 1);
+  animation: ripple 2s infinite;
   pointer-events: none;
 }
 
 @keyframes ripple {
   0% {
-    width: 10px;
-    height: 10px;
+    width: 4px;
+    height: 4px;
     opacity: 1;
   }
   100% {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     opacity: 0;
   }
 }
@@ -378,30 +366,29 @@ body, html {
 /* Controls */
 .controls {
   position: absolute;
-  bottom: 100px;
-  right: 30px;
+  bottom: 40px;
+  right: 40px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
   z-index: 10;
 }
 
 .control-button {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  padding: 12px 0;
   font-family: 'Space Mono', monospace;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 300;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   cursor: pointer;
-  border-radius: 40px;
-  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-  backdrop-filter: blur(10px);
-  min-width: 180px;
+  border-radius: 0;
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  backdrop-filter: blur(5px);
+  min-width: 160px;
   text-align: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   position: relative;
   overflow: hidden;
 }
@@ -409,65 +396,60 @@ body, html {
 .control-button::after {
   content: '';
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(120deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 70%);
-  transform: translateX(-100%);
-  transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+  width: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.5);
+  transition: width 0.5s ease;
 }
 
 .control-button:hover {
-  background: rgba(255, 255, 255, 0.12);
-  transform: translateY(-3px);
-  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.1);
-  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.1);
+  letter-spacing: 4px;
 }
 
 .control-button:hover::after {
-  transform: translateX(100%);
+  width: 100%;
 }
 
 .control-button.active {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .control-button.active::after {
-  background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
-  animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  width: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 /* Speed controls */
 .speed-controls {
   position: absolute;
-  bottom: 100px;
-  left: 30px;
+  bottom: 40px;
+  left: 40px;
   display: flex;
-  gap: 12px;
+  gap: 20px;
   z-index: 10;
 }
 
 .speed-button {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  padding: 12px 0;
   font-family: 'Space Mono', monospace;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 300;
-  letter-spacing: 1.5px;
+  letter-spacing: 3px;
   cursor: pointer;
-  border-radius: 30px;
-  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border-radius: 0;
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  backdrop-filter: blur(5px);
+  width: 80px;
+  text-align: center;
   position: relative;
   overflow: hidden;
 }
@@ -475,51 +457,49 @@ body, html {
 .speed-button::after {
   content: '';
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(120deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 70%);
-  transform: translateX(-100%);
-  transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+  width: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.5);
+  transition: width 0.5s ease;
 }
 
 .speed-button:hover {
-  background: rgba(255, 255, 255, 0.12);
-  transform: translateY(-3px);
-  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.1);
-  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.1);
+  letter-spacing: 4px;
 }
 
 .speed-button:hover::after {
-  transform: translateX(100%);
+  width: 100%;
 }
 
 .speed-button.active {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .speed-button.active::after {
-  background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
-  animation: shimmer 3s infinite;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 /* Info panel */
 .info-panel {
   position: absolute;
-  top: 30px;
-  right: 30px;
+  top: 0;
+  right: 0;
   width: 300px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 25px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 80px 40px;
   z-index: 20;
   backdrop-filter: blur(10px);
-  transform: translateX(350px);
-  transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  transform: translateX(100%);
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
 }
 
 .info-panel.visible {
@@ -527,71 +507,66 @@ body, html {
 }
 
 .info-title {
-  font-size: 18px;
-  font-weight: 400;
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 15px;
+  font-size: 14px;
+  font-weight: 300;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
   color: rgba(255, 255, 255, 0.9);
-  letter-spacing: 1.5px;
+  letter-spacing: 3px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .info-content {
-  font-size: 14px;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 1px;
   font-weight: 300;
-  letter-spacing: 0.5px;
 }
 
 .info-content p {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .info-button {
   position: absolute;
-  top: 30px;
-  right: 30px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  top: 40px;
+  right: 40px;
+  width: 30px;
+  height: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   z-index: 15;
-  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.5s ease;
+  background: transparent;
+  border: none;
 }
 
 .info-button:hover {
-  background: rgba(255, 255, 255, 0.12);
-  transform: scale(1.1);
-  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.1);
+  transform: rotate(90deg);
 }
 
 .info-icon {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
   font-style: italic;
   font-weight: 300;
+  letter-spacing: 1px;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .counter {
-    font-size: 14px;
-    top: 20px;
-    left: 20px;
-    padding: 8px 15px;
+    font-size: 12px;
+    top: 30px;
+    left: 30px;
   }
   
   .timeline-container {
-    width: 90%;
-    bottom: 20px;
+    width: 80%;
+    bottom: 30px;
   }
   
   .timeline-marker-label {
@@ -599,34 +574,30 @@ body, html {
   }
   
   .controls {
-    bottom: 80px;
-    right: 20px;
-    gap: 10px;
+    bottom: 30px;
+    right: 30px;
+    gap: 15px;
   }
   
   .control-button {
-    padding: 10px 16px;
-    font-size: 12px;
+    padding: 10px 0;
+    font-size: 10px;
     min-width: 140px;
   }
   
   .speed-controls {
-    bottom: 80px;
-    left: 20px;
-    gap: 8px;
+    bottom: 30px;
+    left: 30px;
+    gap: 15px;
   }
   
   .info-panel {
-    width: 260px;
-    top: 20px;
-    right: 20px;
-    padding: 20px;
+    width: 100%;
+    padding: 60px 30px;
   }
   
   .info-button {
-    top: 20px;
-    right: 20px;
-    width: 36px;
-    height: 36px;
+    top: 30px;
+    right: 30px;
   }
 } 

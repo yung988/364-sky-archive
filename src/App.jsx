@@ -1,23 +1,10 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars, useProgress, Html, FlyControls } from '@react-three/drei';
 import SkyGallery from './components/SkyGallery';
 import Timeline from './components/Timeline';
 import { gsap } from 'gsap';
 import './styles.css';
-
-// Komponenta pro získání reference na kameru
-function CameraController({ cameraRef }) {
-  const { camera } = useThree();
-  
-  useEffect(() => {
-    if (cameraRef) {
-      cameraRef.current = camera;
-    }
-  }, [camera, cameraRef]);
-  
-  return null;
-}
 
 // Loader component
 function Loader() {
@@ -59,9 +46,6 @@ function App() {
   const [viewMode, setViewMode] = useState('3d'); // '3d' or '2d'
   const [timeOfDay, setTimeOfDay] = useState('den'); // 'den' or 'noc'
   const totalDays = 364;
-  
-  // Reference na kameru pro animace
-  const cameraRef = useRef();
   
   // Audio references
   const ambientSoundRef = useRef(null);
@@ -133,7 +117,6 @@ function App() {
   // Funkce pro určení denní doby podle dne v roce
   const determineTimeOfDay = (day) => {
     // Jednoduchá simulace - polovina roku je den, polovina noc
-    // V reálné aplikaci by toto bylo složitější podle skutečné astronomické pozice
     if (day < totalDays / 2) {
       setTimeOfDay('den');
     } else {
@@ -280,7 +263,6 @@ function App() {
                 target={[0, 0, 0]}
               />
             )}
-            <CameraController cameraRef={cameraRef} />
           </Suspense>
         </Canvas>
       </div>
