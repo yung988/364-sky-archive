@@ -1,0 +1,417 @@
+/* styles.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Space Mono', monospace;
+    background-color: #000;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    cursor: none; /* Skrýt defaultní kurzor pro vlastní kurzor */
+}
+
+/* Vlastní kurzor inspirovaný designem z článku */
+.custom-cursor {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.7);
+    pointer-events: none;
+    mix-blend-mode: difference;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease;
+}
+
+.custom-cursor.active {
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.gallery {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1; /* Nad oblohou, ale pod ovládacími prvky */
+}
+
+.sky-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    will-change: transform;
+    transition: opacity 0.5s ease;
+    background-color: #000;
+}
+
+.sky-image {
+    width: 90vw;
+    max-width: 1600px;
+    height: 80vh;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 0;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    transition: transform 0.5s ease;
+    background-color: #111;
+    position: relative;
+    overflow: hidden;
+    /* Specifické nastavení pro náš gradient */
+    background-size: cover;
+    background-position: center;
+}
+
+/* Styl pro hvězdy */
+.star {
+    position: absolute;
+    background-color: white;
+    border-radius: 50%;
+    animation: twinkle 4s infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+.sky-image.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.day-info {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 0;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Timeline */
+.timeline {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 4px;
+    background-color: rgba(30, 30, 35, 0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 2px;
+    overflow: hidden;
+    z-index: 10;
+    cursor: pointer;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.3),
+                inset -1px -1px 3px rgba(255, 255, 255, 0.1);
+    transition: height 0.2s ease;
+}
+
+.timeline:hover {
+    height: 8px;
+}
+
+.timeline-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #4d61f9, #6e8dff);
+    width: 0;
+    transition: width 0.2s ease;
+    box-shadow: 0 0 10px rgba(77, 97, 249, 0.5);
+}
+
+/* Controls */
+.controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 10;
+}
+
+.control-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: rgba(40, 40, 45, 0.7);
+    backdrop-filter: blur(8px);
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3),
+                -2px -2px 10px rgba(255, 255, 255, 0.05);
+}
+
+.control-btn:hover {
+    transform: translateY(-2px);
+    background-color: rgba(50, 50, 55, 0.8);
+    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.4),
+                -2px -2px 10px rgba(255, 255, 255, 0.1);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3),
+                inset -2px -2px 5px rgba(255, 255, 255, 0.1);
+}
+
+/* Koncepční prvky */
+.artistic-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.2) 100%);
+    mix-blend-mode: normal;
+}
+
+.grain-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 49;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc1IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGZpbHRlcj0idXJsKCNhKSIgb3BhY2l0eT0iLjA1IiBkPSJNMCAwaDMwMHYzMDBIMHoiLz48L3N2Zz4=');
+    opacity: 0.04;
+}
+
+/* Loader */
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loader-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.2);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+.loader-text {
+    font-size: 14px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Galerie */
+.image-container {
+    position: relative;
+    width: 80vmin;
+    height: 60vmin;
+    max-width: 90%;
+    max-height: 70%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    backdrop-filter: blur(4px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.image-container:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Obrázky jednotlivých dnů */
+.day-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: none;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    position: relative;
+    filter: contrast(1.05) saturate(1.1);
+}
+
+.day-image.active {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* Číslo dne v rohu obrázku */
+.image-container::after {
+    content: attr(data-day);
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 4px;
+    z-index: 5;
+    backdrop-filter: blur(4px);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 300;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Counter */
+.counter {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+    z-index: 10;
+    padding: 10px 20px;
+    background-color: rgba(40, 40, 45, 0.7);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3),
+                inset -2px -2px 5px rgba(255, 255, 255, 0.1);
+    letter-spacing: 1px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.counter:hover {
+    transform: translateX(-50%) scale(1.05);
+    background-color: rgba(50, 50, 55, 0.7);
+}
+
+/* Responzivní design */
+@media (max-width: 768px) {
+    .counter {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+    
+    .controls {
+        gap: 15px;
+    }
+    
+    .control-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .timeline {
+        width: 90%;
+    }
+    
+    .image-container {
+        width: 90vmin;
+        height: 70vmin;
+    }
+}
+
+@media (max-width: 480px) {
+    .counter {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+    
+    .controls {
+        gap: 10px;
+    }
+    
+    .control-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+    
+    .image-container::after {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+}
+
+/* Třídy pro animace */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.96); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.fade-out {
+    animation: fadeOut 0.5s ease forwards;
+}
+
+/* Přidat overlay efekt pro lepší vizuální efekt */
+.vignette-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    background: radial-gradient(
+        ellipse at center,
+        transparent 60%,
+        rgba(0, 0, 0, 0.5) 100%
+    );
+    mix-blend-mode: overlay;
+}
