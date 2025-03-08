@@ -43,7 +43,6 @@ function App() {
   const [showInfo, setShowInfo] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState('orbit'); // 'orbit' or 'fly'
-  const [viewMode, setViewMode] = useState('3d'); // '3d' or '2d'
   const totalDays = 364;
   
   // Audio references
@@ -116,8 +115,8 @@ function App() {
   const handleDayChange = (day) => {
     if (day !== currentDay) {
       setCurrentDay(day);
-      // Play transition sound if enabled
-      if (soundEnabled && transitionSoundRef.current) {
+      // Play transition sound if enabled, but only if it's a user-initiated change
+      if (soundEnabled && transitionSoundRef.current && !autoplay) {
         transitionSoundRef.current.currentTime = 0;
         transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
       }
@@ -176,16 +175,6 @@ function App() {
     setAutoplaySpeed(speed);
   };
 
-  const toggleViewMode = () => {
-    // Play UI click sound
-    if (soundEnabled && uiClickSoundRef.current) {
-      uiClickSoundRef.current.currentTime = 0;
-      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
-    }
-    
-    setViewMode(prev => prev === '3d' ? '2d' : '3d');
-  };
-
   if (isLoading) {
     return (
       <div className="loader-container">
@@ -199,8 +188,8 @@ function App() {
 
   return (
     <div className="app-container">
-      <div className="canvas-container" style={{ display: viewMode === '3d' ? 'block' : 'none' }}>
-        <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
+      <div className="canvas-container">
+        <Canvas camera={{ position: [0, 0, 0], fov: 75 }}>
           <Suspense fallback={<Loader />}>
             <ambientLight intensity={0.5} />
             <pointLight position={[10, 10, 10]} />
@@ -209,8 +198,8 @@ function App() {
               <OrbitControls 
                 enableZoom={true} 
                 enablePan={true}
-                maxDistance={15}
-                minDistance={3}
+                maxDistance={5}
+                minDistance={0.1}
               />
             ) : (
               <FlyControls 
@@ -219,20 +208,12 @@ function App() {
                 dragToLook={true}
               />
             )}
-            <Stars 
-              radius={100} 
-              depth={50} 
-              count={5000} 
-              factor={4} 
-              saturation={0} 
-              fade 
-            />
           </Suspense>
         </Canvas>
       </div>
       
       {/* Fallback image display - zobrazí se, pokud 3D nefunguje nebo je zvolen 2D režim */}
-      <div className="fallback-image" style={{ display: viewMode === '2d' ? 'block' : 'none' }}>
+      <div className="fallback-image" style={{ display: cameraMode === 'fly' ? 'block' : 'none' }}>
         <img 
           src={`/images/day_${(currentDay % 8) + 1}.JPG`} 
           alt={`Den ${currentDay + 1}`} 
@@ -268,13 +249,6 @@ function App() {
           onClick={toggleCameraMode}
         >
           {cameraMode === 'orbit' ? "KAMERA: ORBIT" : "KAMERA: LET"}
-        </button>
-        
-        <button 
-          className={`control-button ${viewMode === '2d' ? 'active' : ''}`}
-          onClick={toggleViewMode}
-        >
-          {viewMode === '3d' ? "ZOBRAZENÍ: 3D" : "ZOBRAZENÍ: 2D"}
         </button>
         
         <button 
