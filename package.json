@@ -3,22 +3,28 @@
   "version": "1.0.0",
   "description": "Artistic installation showcasing 364 sky images",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^9.92.1",
+    "@react-three/fiber": "^8.15.12",
+    "@tailwindcss/postcss": "^4.0.12",
+    "@tailwindcss/vite": "^4.0.12",
+    "gsap": "^3.12.3",
+    "leva": "^0.9.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@react-three/fiber": "^8.15.12",
-    "@react-three/drei": "^9.92.1",
-    "three": "^0.159.0",
-    "gsap": "^3.12.3",
-    "leva": "^0.9.35"
+    "three": "^0.159.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.0.12",
     "vite": "^5.0.8"
   }
 }

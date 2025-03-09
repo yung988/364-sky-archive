@@ -35,6 +35,88 @@ function Loader() {
   );
 }
 
+// Modern floating control bar component
+function FloatingControlBar({ 
+  currentDay, 
+  totalDays, 
+  autoplay, 
+  soundEnabled, 
+  cameraMode, 
+  viewMode,
+  onDayChange,
+  onToggleAutoplay,
+  onToggleSound,
+  onToggleCameraMode,
+  onToggleViewMode,
+  onShowInfo
+}) {
+  return (
+    <div className="floating-control-bar">
+      <div className="control-bar-content">
+        <div className="day-counter">DEN {currentDay + 1} / {totalDays}</div>
+        
+        <div className="control-buttons">
+          <button 
+            className={`control-btn ${autoplay ? 'active' : ''}`}
+            onClick={onToggleAutoplay}
+          >
+            {autoplay ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            )}
+            <span>{autoplay ? "ZASTAVIT" : "PŘEHRÁT"}</span>
+          </button>
+          
+          <button 
+            className="control-btn"
+            onClick={() => onDayChange('prev')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            <span>PŘEDCHOZÍ</span>
+          </button>
+          
+          <button 
+            className="control-btn"
+            onClick={() => onDayChange('next')}
+          >
+            <span>DALŠÍ</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+          
+          <button 
+            className={`control-btn ${viewMode === '2d' ? 'active' : ''}`}
+            onClick={onToggleViewMode}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            <span>{viewMode === '3d' ? "2D" : "3D"}</span>
+          </button>
+          
+          <button 
+            className={`control-btn ${soundEnabled ? 'active' : ''}`}
+            onClick={onToggleSound}
+          >
+            {soundEnabled ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+            )}
+            <span>{soundEnabled ? "ZVUK: ZAP" : "ZVUK: VYP"}</span>
+          </button>
+          
+          <button 
+            className="control-btn info-btn"
+            onClick={onShowInfo}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>INFO</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [currentDay, setCurrentDay] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -132,16 +214,19 @@ function App() {
     determineTimeOfDay(currentDay);
   }, [currentDay]);
 
-  const handleDayChange = (day) => {
-    // Only change if it's a different day
-    if (day !== currentDay) {
-      setCurrentDay(day);
-      
-      // Play transition sound if enabled, but only if it's a user-initiated change
-      if (soundEnabled && transitionSoundRef.current && !autoplay) {
-        transitionSoundRef.current.currentTime = 0;
-        transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
-      }
+  const handleDayChange = (direction) => {
+    if (direction === 'prev') {
+      setCurrentDay((prev) => (prev - 1 + totalDays) % totalDays);
+    } else if (direction === 'next') {
+      setCurrentDay((prev) => (prev + 1) % totalDays);
+    } else if (typeof direction === 'number') {
+      setCurrentDay(direction);
+    }
+    
+    // Play transition sound if enabled
+    if (soundEnabled && transitionSoundRef.current) {
+      transitionSoundRef.current.currentTime = 0;
+      transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
     }
     
     if (autoplay) setAutoplay(false);
@@ -177,6 +262,7 @@ function App() {
     setCameraMode(prev => prev === 'orbit' ? 'fly' : 'orbit');
   };
   
+  // Toggle info panel
   const toggleInfo = () => {
     // Play UI click sound
     if (soundEnabled && uiClickSoundRef.current) {
@@ -198,6 +284,7 @@ function App() {
     setAutoplaySpeed(speed);
   };
 
+  // Toggle between 2D and 3D view modes
   const toggleViewMode = () => {
     // Play UI click sound
     if (soundEnabled && uiClickSoundRef.current) {
@@ -205,7 +292,7 @@ function App() {
       uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
     }
     
-    // Přepnutí režimu zobrazení
+    // Toggle view mode
     setViewMode(prev => prev === '3d' ? '2d' : '3d');
   };
 
@@ -273,78 +360,27 @@ function App() {
         </Canvas>
       </div>
       
-      <div className="counter">DEN {currentDay + 1} / {totalDays}</div>
+      {/* Modern Floating Control Bar */}
+      <FloatingControlBar 
+        currentDay={currentDay}
+        totalDays={totalDays}
+        autoplay={autoplay}
+        soundEnabled={soundEnabled}
+        cameraMode={cameraMode}
+        viewMode={viewMode}
+        onDayChange={handleDayChange}
+        onToggleAutoplay={toggleAutoplay}
+        onToggleSound={toggleSound}
+        onToggleCameraMode={toggleCameraMode}
+        onToggleViewMode={toggleViewMode}
+        onShowInfo={toggleInfo}
+      />
       
       <Timeline 
         currentDay={currentDay} 
         totalDays={totalDays} 
         onDayChange={handleDayChange} 
       />
-      
-      <div className="controls">
-        <button 
-          className={`control-button ${autoplay ? 'active' : ''}`} 
-          onClick={toggleAutoplay}
-        >
-          {autoplay ? "ZASTAVIT" : "PŘEHRÁT"}
-        </button>
-        
-        <button 
-          className={`control-button ${soundEnabled ? 'active' : ''}`} 
-          onClick={toggleSound}
-        >
-          {soundEnabled ? "ZVUK: ZAP" : "ZVUK: VYP"}
-        </button>
-        
-        <button 
-          className="control-button" 
-          onClick={toggleCameraMode}
-        >
-          {cameraMode === 'orbit' ? "KAMERA: ORBIT" : "KAMERA: LET"}
-        </button>
-        
-        <button 
-          className={`control-button ${viewMode === '2d' ? 'active' : ''}`}
-          onClick={toggleViewMode}
-        >
-          {viewMode === '3d' ? "ZOBRAZENÍ: 3D" : "ZOBRAZENÍ: 2D"}
-        </button>
-        
-        <button 
-          className="control-button" 
-          onClick={toggleInfo}
-        >
-          INFO
-        </button>
-      </div>
-      
-      <div className="speed-controls">
-        <button 
-          className={`speed-button ${autoplaySpeed === 2000 ? 'active' : ''}`} 
-          onClick={() => changeAutoplaySpeed(2000)}
-        >
-          RYCHLE
-        </button>
-        <button 
-          className={`speed-button ${autoplaySpeed === 5000 ? 'active' : ''}`} 
-          onClick={() => changeAutoplaySpeed(5000)}
-        >
-          STŘEDNÍ
-        </button>
-        <button 
-          className={`speed-button ${autoplaySpeed === 10000 ? 'active' : ''}`} 
-          onClick={() => changeAutoplaySpeed(10000)}
-        >
-          POMALU
-        </button>
-      </div>
-      
-      <button 
-        className="info-button" 
-        onClick={toggleInfo}
-      >
-        <span className="info-icon">i</span>
-      </button>
       
       <div className={`info-panel ${showInfo ? 'visible' : ''}`}>
         <div className="info-title">DNES OBLOHA NEVYPADALA STEJNĚ</div>

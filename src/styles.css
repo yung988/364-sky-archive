@@ -1,3 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+}
+
 /* Base styles */
 * {
   margin: 0;
@@ -106,82 +155,20 @@ body, html {
   letter-spacing: 1px;
 }
 
-/* Counter */
-.counter {
-  position: absolute;
-  top: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 16px;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 12px 20px;
-  z-index: 10;
-  letter-spacing: 3px;
-  font-weight: 400;
-  border-radius: 0;
-  border: 2px solid white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  font-family: 'Space Mono', monospace;
-  text-align: center;
-}
-
-.counter:hover {
-  opacity: 1;
-}
-
-/* Time of Day Indicator */
-.time-of-day {
-  position: absolute;
-  top: 20px;
-  left: 150px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  z-index: 10;
-  transition: background-color 0.5s ease;
-}
-
-/* Styling for day/night states */
-.time-of-day:before {
-  content: '';
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  margin-right: 8px;
-  vertical-align: middle;
-}
-
-/* Day indicator */
-.time-of-day.den:before {
-  background-color: #ffcc33;
-  box-shadow: 0 0 10px 2px rgba(255, 204, 51, 0.7);
-}
-
-/* Night indicator */
-.time-of-day.noc:before {
-  background-color: #3366cc;
-  box-shadow: 0 0 10px 2px rgba(51, 102, 204, 0.7);
-}
-
-/* Timeline container */
+/* Timeline */
 .timeline-container {
   position: absolute;
-  bottom: 40px;
+  bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  width: 70%;
+  width: 80%;
+  max-width: 1000px;
   z-index: 10;
 }
 
-/* Timeline */
 .timeline {
   width: 100%;
-  height: 1px;
+  height: 4px;
   background-color: rgba(255, 255, 255, 0.2);
   position: relative;
   cursor: pointer;
@@ -193,418 +180,256 @@ body, html {
 
 .timeline-progress {
   height: 100%;
-  background: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.8);
   position: absolute;
   top: 0;
   left: 0;
   transition: width 0.3s ease;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 .timeline-marker {
-  width: 4px;
-  height: 4px;
-  background-color: #fff;
+  width: 12px;
+  height: 12px;
+  background-color: white;
   border-radius: 50%;
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
   cursor: pointer;
   z-index: 2;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .timeline-marker:hover {
-  width: 8px;
-  height: 8px;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+  transform: translate(-50%, -50%) scale(1.5);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
 .timeline-marker-label {
   position: absolute;
-  bottom: 15px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
   opacity: 0;
-  transition: opacity 0.3s ease, bottom 0.3s ease;
+  transition: opacity 0.2s ease;
   white-space: nowrap;
-  letter-spacing: 2px;
-  font-weight: 300;
 }
 
 .timeline-marker:hover .timeline-marker-label {
   opacity: 1;
-  bottom: 20px;
 }
 
 .timeline-ripple {
   position: absolute;
-  width: 4px;
-  height: 4px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.4);
   transform: translate(-50%, -50%);
-  animation: ripple 2s infinite;
-  pointer-events: none;
+  animation: ripple 1.5s infinite ease-out;
+  z-index: 1;
 }
 
 @keyframes ripple {
   0% {
-    width: 4px;
-    height: 4px;
+    transform: translate(-50%, -50%) scale(1);
     opacity: 1;
   }
   100% {
-    width: 40px;
-    height: 40px;
+    transform: translate(-50%, -50%) scale(3);
     opacity: 0;
   }
 }
 
-/* Timeline tooltip */
-.timeline-tooltip {
-  position: absolute;
-  bottom: 20px;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  padding: 10px 15px;
-  border-radius: 4px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  z-index: 20;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-  min-width: 120px;
-  text-align: center;
-}
-
-.timeline-tooltip:after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 6px solid rgba(0, 0, 0, 0.8);
-}
-
-.tooltip-date {
-  font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 5px;
-}
-
-.tooltip-info {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 3px;
-}
-
-.tooltip-season {
-  font-size: 12px;
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-/* Season indicators */
-.timeline-seasons {
-  position: absolute;
-  bottom: -25px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-}
-
-.season {
-  position: absolute;
-  height: 100%;
-  opacity: 0.5;
-  transition: all 0.3s ease;
-}
-
-.season span {
-  position: absolute;
-  bottom: -18px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 10px;
-  white-space: nowrap;
-  color: rgba(255, 255, 255, 0.5);
-  transition: all 0.3s ease;
-}
-
-.season:hover {
-  opacity: 0.8;
-}
-
-.season:hover span {
-  color: rgba(255, 255, 255, 0.9);
-  transform: translateX(-50%) translateY(-2px);
-}
-
-.spring {
-  background: linear-gradient(to right, #7cff7c, #c9ff7c);
-}
-
-.summer {
-  background: linear-gradient(to right, #c9ff7c, #ffdc7c);
-}
-
-.fall {
-  background: linear-gradient(to right, #ffdc7c, #ff9d7c);
-}
-
-.winter {
-  background: linear-gradient(to right, #ff9d7c, #7cffff);
-}
-
-/* Controls */
-.controls {
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: row;
-  gap: 15px;
-  z-index: 10;
-  flex-wrap: wrap;
-  justify-content: center;
-  width: 80%;
-  max-width: 800px;
-}
-
-.control-button {
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  border: 2px solid white;
-  padding: 12px 20px;
-  font-family: 'Space Mono', monospace;
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: 2px;
-  cursor: pointer;
-  border-radius: 0;
-  transition: all 0.3s ease;
-  min-width: 120px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.8);
-  transform: none;
-  margin: 5px;
-}
-
-.control-button:hover {
-  color: rgba(255, 255, 255, 1);
-  background: rgba(0, 0, 0, 0.9);
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.8);
-}
-
-.control-button:active {
-  transform: translate(0px, 0px);
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
-}
-
-.control-button.active {
-  color: black;
-  background: white;
-  border-color: white;
-  font-weight: 700;
-}
-
-/* Speed controls */
-.speed-controls {
-  position: absolute;
-  bottom: 40px;
-  left: 40px;
-  display: flex;
-  gap: 20px;
-  z-index: 10;
-}
-
-.speed-button {
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.7);
-  border: none;
-  padding: 12px 0;
-  font-family: 'Space Mono', monospace;
-  font-size: 10px;
-  font-weight: 300;
-  letter-spacing: 3px;
-  cursor: pointer;
-  border-radius: 0;
-  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-  backdrop-filter: blur(5px);
-  width: 80px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.speed-button::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.5);
-  transition: width 0.5s ease;
-}
-
-.speed-button:hover {
-  color: rgba(255, 255, 255, 1);
-  background: rgba(255, 255, 255, 0.1);
-  letter-spacing: 4px;
-}
-
-.speed-button:hover::after {
-  width: 100%;
-}
-
-.speed-button.active {
-  color: rgba(255, 255, 255, 1);
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.speed-button.active::after {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
 /* Info panel */
 .info-panel {
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0.9);
+  transform: translate(-50%, -50%);
   width: 80%;
   max-width: 600px;
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
+  background-color: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
   padding: 30px;
   z-index: 100;
   opacity: 0;
-  pointer-events: none;
-  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-  border: 2px solid white;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  max-height: 80vh;
-  overflow-y: auto;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
 .info-panel.visible {
   opacity: 1;
-  pointer-events: all;
-  transform: translate(-50%, -50%) scale(1);
+  visibility: visible;
 }
 
 .info-title {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 20px;
-  letter-spacing: 3px;
+  color: white;
+  letter-spacing: 2px;
   text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 15px;
 }
 
 .info-content {
-  font-size: 12px;
-  line-height: 1.8;
-  color: rgba(255, 255, 255, 0.7);
-  letter-spacing: 1px;
-  font-weight: 300;
-}
-
-.info-content p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  line-height: 1.6;
   margin-bottom: 20px;
 }
 
-.info-button {
-  position: absolute;
-  top: 40px;
-  right: 40px;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  z-index: 15;
-  transition: all 0.5s ease;
-  background: transparent;
-  border: none;
-}
-
-.info-button:hover {
-  transform: rotate(90deg);
-}
-
-.info-icon {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
-  font-style: italic;
-  font-weight: 300;
-  letter-spacing: 1px;
+.info-content p {
+  margin-bottom: 15px;
 }
 
 .close-info-button {
-  position: relative;
   display: block;
   margin: 20px auto 0;
-  background: rgba(0, 0, 0, 0.7);
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  border: 2px solid white;
-  padding: 10px 20px;
-  font-family: 'Space Mono', monospace;
+  padding: 8px 20px;
   font-size: 14px;
-  font-weight: 400;
-  letter-spacing: 2px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.8);
+  transition: all 0.2s ease;
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 2px;
+  border-radius: 4px;
 }
 
 .close-info-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.8);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .close-info-button:active {
-  transform: translate(0px, 0px);
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
+  transform: scale(0.98);
 }
 
-/* Responsive adjustments */
+/* Floating control bar */
+.floating-control-bar {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px 24px;
+  z-index: 20;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  width: auto;
+  max-width: 90%;
+  transition: all 0.3s ease;
+}
+
+.control-bar-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.day-counter {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 2px;
+}
+
+.control-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Space Mono', monospace;
+}
+
+.control-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.control-btn:active {
+  transform: scale(0.98);
+}
+
+.control-btn.active {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.control-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.control-btn span {
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.info-btn {
+  margin-left: 8px;
+}
+
 @media (max-width: 768px) {
-  .counter {
-    top: 20px;
-    font-size: 14px;
-    padding: 8px 15px;
+  .floating-control-bar {
+    bottom: 80px;
+    padding: 12px 16px;
   }
   
-  .controls {
-    bottom: 20px;
-    width: 90%;
+  .control-buttons {
+    gap: 6px;
   }
   
-  .control-button {
+  .control-btn {
+    padding: 6px 10px;
     font-size: 12px;
-    padding: 10px 15px;
-    min-width: 100px;
+  }
+  
+  .control-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .control-btn span {
+    font-size: 10px;
+  }
+  
+  .day-counter {
+    font-size: 14px;
+  }
+  
+  .timeline-container {
+    width: 90%;
+    bottom: 20px;
   }
   
   .info-panel {
@@ -614,5 +439,9 @@ body, html {
   
   .info-title {
     font-size: 20px;
+  }
+  
+  .info-content {
+    font-size: 14px;
   }
 } 
