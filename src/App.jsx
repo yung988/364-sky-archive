@@ -609,8 +609,14 @@ function App() {
             prezentovány jako textura na sféře obklopující pozorovatele, což vytváří dojem, že ležíte 
             na trávě a díváte se na oblohu nad vámi.
           </p>
+          <button 
+            className="close-info-button" 
+            onClick={toggleInfo}
+            aria-label="Zavřít informační panel"
+          >
+            ZAVŘÍT
+          </button>
         </div>
-        <button className="close-info-button" onClick={toggleInfo}>ZAVŘÍT</button>
       </div>
       
       {/* Audio elements */}
