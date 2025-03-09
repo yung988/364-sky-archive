@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
@@ -13,7 +13,6 @@ const getImagePath = (dayIndex) => {
   // Use base URL for GitHub Pages
   const baseUrl = import.meta.env.BASE_URL || '/';
   const path = `${baseUrl}images/day_${imageNumber}.JPG`;
-  console.log("Loading image from path:", path);
   return path;
 };
 
@@ -24,20 +23,33 @@ const SkyGallery = ({ currentDay, totalDays }) => {
   const [prevDay, setPrevDay] = useState(currentDay);
   const [transitionProgress, setTransitionProgress] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [rotation, setRotation] = useState(0);
   
-  // Calculate next day
-  const nextDay = (currentDay + 1) % totalDays;
+  // Předpřipravíme cesty ke všem texturám
+  const texturePaths = useMemo(() => {
+    const paths = [];
+    for (let i = 0; i < 8; i++) {
+      paths.push(getImagePath(i));
+    }
+    return paths;
+  }, []);
   
-  // Load the current day's texture
-  const texture = useTexture(getImagePath(currentDay));
+  // Načteme všechny textury najednou
+  const allTextures = useTexture(texturePaths);
   
-  // Load the next day's texture for smooth transitions
-  const nextTexture = useTexture(getImagePath(nextDay));
+  // Funkce pro získání textury podle dne
+  const getTextureForDay = (day) => {
+    const index = day % 8;
+    return allTextures[index];
+  };
+  
+  // Aktuální a předchozí textura
+  const currentTexture = getTextureForDay(currentDay);
+  const prevTexture = getTextureForDay(prevDay);
   
   // Configure texture settings for maximální kvalitu
   useEffect(() => {
-    const configureTexture = (tex) => {
+    // Nastavíme všechny textury najednou
+    allTextures.forEach(tex => {
       if (tex) {
         // Nastavení pro maximální kvalitu
         tex.minFilter = THREE.LinearFilter;
@@ -48,21 +60,17 @@ const SkyGallery = ({ currentDay, totalDays }) => {
         tex.generateMipmaps = false; // Vypnutí mipmapování pro ostřejší obraz
         tex.needsUpdate = true;
       }
-    };
-    
-    configureTexture(texture);
-    configureTexture(nextTexture);
-  }, [texture, nextTexture]);
+    });
+  }, [allTextures]);
   
   // Handle day change and start transition
   useEffect(() => {
     if (currentDay !== prevDay && !isTransitioning) {
-      console.log(`Starting transition from day ${prevDay} to day ${currentDay}`);
       setIsTransitioning(true);
       
-      // Jednoduchý lineární přechod
+      // Plynulejší přechod
       gsap.to({}, {
-        duration: 0.8, // Kratší doba pro rychlejší přechod
+        duration: 1.0, // Delší doba pro plynulejší přechod
         onUpdate: function() {
           setTransitionProgress(this.progress());
         },
@@ -71,7 +79,7 @@ const SkyGallery = ({ currentDay, totalDays }) => {
           setTransitionProgress(0);
           setIsTransitioning(false);
         },
-        ease: "none" // Lineární přechod bez easingu
+        ease: "power1.inOut" // Plynulejší přechod s easingem
       });
     }
   }, [currentDay, prevDay, isTransitioning]);
@@ -85,8 +93,8 @@ const SkyGallery = ({ currentDay, totalDays }) => {
     
     // Aktualizace materiálu
     if (material) {
-      material.uniforms.texture1.value = texture;
-      material.uniforms.texture2.value = nextTexture;
+      material.uniforms.texture1.value = prevTexture;
+      material.uniforms.texture2.value = currentTexture;
       material.uniforms.mixRatio.value = transitionProgress;
     }
   });
@@ -94,8 +102,8 @@ const SkyGallery = ({ currentDay, totalDays }) => {
   // Vytvoříme shader materiál pro prolínání obrázků
   const material = new THREE.ShaderMaterial({
     uniforms: {
-      texture1: { value: texture },
-      texture2: { value: nextTexture },
+      texture1: { value: prevTexture },
+      texture2: { value: currentTexture },
       mixRatio: { value: transitionProgress },
     },
     vertexShader: `
@@ -117,8 +125,9 @@ const SkyGallery = ({ currentDay, totalDays }) => {
         vec4 color1 = texture2D(texture1, vUv);
         vec4 color2 = texture2D(texture2, vUv);
         
-        // Lineární mix mezi texturami
-        gl_FragColor = mix(color1, color2, mixRatio);
+        // Plynulý mix mezi texturami s easingem
+        float smoothMix = smoothstep(0.0, 1.0, mixRatio);
+        gl_FragColor = mix(color1, color2, smoothMix);
       }
     `,
     side: THREE.BackSide
