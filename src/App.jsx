@@ -184,7 +184,8 @@ function App() {
       uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
     }
     
-    setShowInfo(!showInfo);
+    // Toggle info panel visibility
+    setShowInfo(prev => !prev);
   };
   
   const changeAutoplaySpeed = (speed) => {
@@ -346,7 +347,7 @@ function App() {
       </button>
       
       <div className={`info-panel ${showInfo ? 'visible' : ''}`}>
-        <div className="info-title">364 — ARCHIV OBLOH</div>
+        <div className="info-title">DNES OBLOHA NEVYPADALA STEJNĚ</div>
         <div className="info-content">
           <p>
             Tato umělecká instalace zobrazuje 364 obrázků oblohy kreslených každý den v průběhu roku.
@@ -371,6 +372,7 @@ function App() {
             na trávě a díváte se na oblohu nad vámi.
           </p>
         </div>
+        <button className="close-info-button" onClick={toggleInfo}>ZAVŘÍT</button>
       </div>
       
       {/* Audio elements */}
