@@ -293,7 +293,10 @@ function App() {
     }
     
     // Toggle view mode
-    setViewMode(prev => prev === '3d' ? '2d' : '3d');
+    setViewMode(prev => {
+      console.log("Přepínám režim z", prev, "na", prev === '3d' ? '2d' : '3d');
+      return prev === '3d' ? '2d' : '3d';
+    });
   };
 
   if (isLoading) {
@@ -348,11 +351,11 @@ function App() {
               <OrbitControls 
                 enableZoom={false} 
                 enablePan={false}
-                enableRotate={true}
-                minPolarAngle={Math.PI / 2 - 0.1} 
-                maxPolarAngle={Math.PI / 2 + 0.1}
-                minAzimuthAngle={-0.1}
-                maxAzimuthAngle={0.1}
+                enableRotate={false}
+                minPolarAngle={Math.PI / 2} 
+                maxPolarAngle={Math.PI / 2}
+                minAzimuthAngle={0}
+                maxAzimuthAngle={0}
                 target={[0, 0, 0]}
               />
             )}
