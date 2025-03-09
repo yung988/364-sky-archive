@@ -59,9 +59,7 @@ const SkyGallery = ({ currentDay, totalDays }) => {
         tex.wrapT = THREE.ClampToEdgeWrapping;
         tex.generateMipmaps = false; // Vypnutí mipmapování pro ostřejší obraz
         
-        // Otočení obrázků o 180 stupňů pro správné zobrazení data
-        tex.repeat.set(-1, -1);  // Otočení horizontálně i vertikálně (o 180 stupňů)
-        tex.offset.set(1, 1);    // Posun offsetu pro kompletní otočení
+        // Při promítání zevnitř koule není potřeba otáčet textury
         
         tex.needsUpdate = true;
       }
@@ -135,7 +133,7 @@ const SkyGallery = ({ currentDay, totalDays }) => {
         gl_FragColor = mix(color1, color2, smoothMix);
       }
     `,
-    side: THREE.BackSide
+    side: THREE.FrontSide
   });
   
   return (
