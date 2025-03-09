@@ -1,8 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+// Určení, zda jsme na Vercelu
+const isVercel = process.env.VERCEL === '1';
+
 export default defineConfig({
-  base: '/364-sky-archive/',
+  // Nastavení base podle prostředí
+  base: isVercel ? '/' : '/364-sky-archive/',
   plugins: [react()],
   server: {
     open: true
