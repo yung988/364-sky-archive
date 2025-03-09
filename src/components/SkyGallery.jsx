@@ -12,7 +12,7 @@ const getImagePath = (dayIndex) => {
   
   // Use base URL for GitHub Pages
   const baseUrl = import.meta.env.BASE_URL || '/';
-  const path = `${baseUrl}images/day_${imageNumber}.jpg`;
+  const path = `${baseUrl}images/day_${imageNumber}.JPG`;
   console.log("Loading image from path:", path);
   return path;
 };
