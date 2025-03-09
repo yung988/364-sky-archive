@@ -58,7 +58,9 @@ body, html {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  font-family: 'Space Mono', monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   background-color: #000;
   color: #fff;
 }
@@ -147,12 +149,13 @@ body, html {
 }
 
 .loader-text {
+  margin-top: 20px;
   font-size: 16px;
   color: rgba(255, 255, 255, 0.8);
   text-align: center;
   max-width: 80%;
-  font-weight: 300;
-  letter-spacing: 1px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 /* Timeline */
@@ -231,8 +234,8 @@ body, html {
   opacity: 0;
   transition: opacity 0.2s ease, transform 0.2s ease;
   white-space: nowrap;
-  font-weight: bold;
-  letter-spacing: 1px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
@@ -347,8 +350,8 @@ body, html {
   white-space: nowrap;
   color: rgba(255, 255, 255, 0.9);
   transition: all 0.3s ease;
-  font-weight: bold;
-  letter-spacing: 1px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
 }
 
@@ -405,18 +408,18 @@ body, html {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 20px;
-  color: white;
-  letter-spacing: 2px;
   text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 15px;
+  letter-spacing: 1px;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .info-content {
-  color: rgba(255, 255, 255, 0.8);
   font-size: 16px;
   line-height: 1.6;
-  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .info-content p {
@@ -433,10 +436,10 @@ body, html {
   font-size: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'Space Mono', monospace;
-  letter-spacing: 2px;
+  font-family: inherit;
+  letter-spacing: 1px;
   border-radius: 6px;
-  font-weight: bold;
+  font-weight: 600;
   z-index: 1000;
   position: relative;
 }
@@ -477,12 +480,11 @@ body, html {
 }
 
 .day-counter {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 600;
   color: white;
-  letter-spacing: 2px;
-  margin-right: 8px;
-  white-space: nowrap;
+  margin-right: 20px;
+  letter-spacing: 0.5px;
 }
 
 .control-buttons {
@@ -495,19 +497,18 @@ body, html {
 .control-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
   color: white;
-  padding: 8px 12px;
-  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'Space Mono', monospace;
-  white-space: nowrap;
-  min-width: 40px;
-  justify-content: center;
+  min-width: 100px;
+  font-family: inherit;
+  font-weight: 500;
 }
 
 .control-btn:hover {
@@ -532,8 +533,9 @@ body, html {
 }
 
 .control-btn span {
-  font-size: 12px;
-  letter-spacing: 1px;
+  font-size: 14px;
+  white-space: nowrap;
+  font-weight: 500;
 }
 
 .info-btn {
