@@ -59,9 +59,9 @@ const SkyGallery = ({ currentDay, totalDays }) => {
         tex.wrapT = THREE.ClampToEdgeWrapping;
         tex.generateMipmaps = false; // Vypnutí mipmapování pro ostřejší obraz
         
-        // Stranové otočení obrázků
-        tex.repeat.set(-1, 1);
-        tex.offset.set(1, 0);
+        // Otočení obrázků o 180 stupňů pro správné zobrazení data
+        tex.repeat.set(-1, -1);  // Otočení horizontálně i vertikálně (o 180 stupňů)
+        tex.offset.set(1, 1);    // Posun offsetu pro kompletní otočení
         
         tex.needsUpdate = true;
       }
