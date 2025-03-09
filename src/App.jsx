@@ -136,37 +136,69 @@ function App() {
   
   // Initialize sounds
   useEffect(() => {
-    // Get base URL for GitHub Pages
-    const baseUrl = import.meta.env.BASE_URL || '/';
-    
-    // Create ambient background sound
-    const ambientSound = new Audio(`${baseUrl}sounds/ambient.mp3`);
-    ambientSound.loop = true;
-    ambientSound.volume = 0.3;
-    ambientSoundRef.current = ambientSound;
-    
-    // Create transition sound
-    const transitionSound = new Audio(`${baseUrl}sounds/transition.mp3`);
-    transitionSound.volume = 0.5;
-    transitionSoundRef.current = transitionSound;
-    
-    // Create UI click sound
-    const uiClickSound = new Audio(`${baseUrl}sounds/click.mp3`);
-    uiClickSound.volume = 0.2;
-    uiClickSoundRef.current = uiClickSound;
-    
-    // Cleanup on unmount
-    return () => {
-      if (ambientSoundRef.current) {
-        ambientSoundRef.current.pause();
-      }
-    };
+    try {
+      // Get base URL for GitHub Pages
+      const baseUrl = import.meta.env.BASE_URL || '/';
+      
+      // Create ambient background sound
+      const ambientSound = new Audio(`${baseUrl}sounds/ambient.mp3`);
+      ambientSound.loop = true;
+      ambientSound.volume = 0.3;
+      ambientSoundRef.current = ambientSound;
+      
+      // Create transition sound
+      const transitionSound = new Audio(`${baseUrl}sounds/transition.mp3`);
+      transitionSound.volume = 0.5;
+      transitionSoundRef.current = transitionSound;
+      
+      // Create UI click sound
+      const uiClickSound = new Audio(`${baseUrl}sounds/click.mp3`);
+      uiClickSound.volume = 0.2;
+      uiClickSoundRef.current = uiClickSound;
+      
+      // Předem načteme zvuky
+      ambientSound.load();
+      transitionSound.load();
+      uiClickSound.load();
+      
+      // Přidáme error handler pro zvuky
+      const handleAudioError = (e) => {
+        console.warn("Audio loading failed:", e);
+        // Vypneme zvuk, pokud nastane chyba
+        setSoundEnabled(false);
+      };
+      
+      ambientSound.addEventListener('error', handleAudioError);
+      transitionSound.addEventListener('error', handleAudioError);
+      uiClickSound.addEventListener('error', handleAudioError);
+      
+      // Cleanup on unmount
+      return () => {
+        if (ambientSoundRef.current) {
+          ambientSoundRef.current.pause();
+          ambientSoundRef.current.removeEventListener('error', handleAudioError);
+        }
+        if (transitionSoundRef.current) {
+          transitionSoundRef.current.removeEventListener('error', handleAudioError);
+        }
+        if (uiClickSoundRef.current) {
+          uiClickSoundRef.current.removeEventListener('error', handleAudioError);
+        }
+      };
+    } catch (error) {
+      console.error("Error initializing sounds:", error);
+      setSoundEnabled(false);
+    }
   }, []);
   
   // Toggle sound
   useEffect(() => {
     if (soundEnabled && ambientSoundRef.current) {
-      ambientSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+      ambientSoundRef.current.play()
+        .catch(e => {
+          console.warn("Audio play failed:", e);
+          setSoundEnabled(false);
+        });
     } else if (ambientSoundRef.current) {
       ambientSoundRef.current.pause();
     }
@@ -181,8 +213,13 @@ function App() {
           const nextDay = (prev + 1) % totalDays;
           // Play transition sound if enabled
           if (soundEnabled && transitionSoundRef.current) {
-            transitionSoundRef.current.currentTime = 0;
-            transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+            try {
+              transitionSoundRef.current.currentTime = 0;
+              transitionSoundRef.current.play()
+                .catch(e => console.warn("Audio play failed:", e));
+            } catch (error) {
+              console.warn("Error playing transition sound:", error);
+            }
           }
           return nextDay;
         });
@@ -225,8 +262,13 @@ function App() {
     
     // Play transition sound if enabled
     if (soundEnabled && transitionSoundRef.current) {
-      transitionSoundRef.current.currentTime = 0;
-      transitionSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+      try {
+        transitionSoundRef.current.currentTime = 0;
+        transitionSoundRef.current.play()
+          .catch(e => console.warn("Audio play failed:", e));
+      } catch (error) {
+        console.warn("Error playing transition sound:", error);
+      }
     }
     
     if (autoplay) setAutoplay(false);
@@ -235,8 +277,13 @@ function App() {
   const toggleAutoplay = () => {
     // Play UI click sound
     if (uiClickSoundRef.current) {
-      uiClickSoundRef.current.currentTime = 0;
-      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+      try {
+        uiClickSoundRef.current.currentTime = 0;
+        uiClickSoundRef.current.play()
+          .catch(e => console.warn("Audio play failed:", e));
+      } catch (error) {
+        console.warn("Error playing UI click sound:", error);
+      }
     }
     
     setAutoplay(!autoplay);
@@ -247,16 +294,26 @@ function App() {
     
     // Play UI click sound if enabling sound
     if (!soundEnabled && uiClickSoundRef.current) {
-      uiClickSoundRef.current.currentTime = 0;
-      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+      try {
+        uiClickSoundRef.current.currentTime = 0;
+        uiClickSoundRef.current.play()
+          .catch(e => console.warn("Audio play failed:", e));
+      } catch (error) {
+        console.warn("Error playing UI click sound:", error);
+      }
     }
   };
   
   const toggleCameraMode = () => {
     // Play UI click sound
     if (soundEnabled && uiClickSoundRef.current) {
-      uiClickSoundRef.current.currentTime = 0;
-      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+      try {
+        uiClickSoundRef.current.currentTime = 0;
+        uiClickSoundRef.current.play()
+          .catch(e => console.warn("Audio play failed:", e));
+      } catch (error) {
+        console.warn("Error playing UI click sound:", error);
+      }
     }
     
     setCameraMode(prev => prev === 'orbit' ? 'fly' : 'orbit');
@@ -266,8 +323,13 @@ function App() {
   const toggleInfo = () => {
     // Play UI click sound
     if (soundEnabled && uiClickSoundRef.current) {
-      uiClickSoundRef.current.currentTime = 0;
-      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+      try {
+        uiClickSoundRef.current.currentTime = 0;
+        uiClickSoundRef.current.play()
+          .catch(e => console.warn("Audio play failed:", e));
+      } catch (error) {
+        console.warn("Error playing UI click sound:", error);
+      }
     }
     
     // Toggle info panel visibility
@@ -277,8 +339,13 @@ function App() {
   const changeAutoplaySpeed = (speed) => {
     // Play UI click sound
     if (soundEnabled && uiClickSoundRef.current) {
-      uiClickSoundRef.current.currentTime = 0;
-      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+      try {
+        uiClickSoundRef.current.currentTime = 0;
+        uiClickSoundRef.current.play()
+          .catch(e => console.warn("Audio play failed:", e));
+      } catch (error) {
+        console.warn("Error playing UI click sound:", error);
+      }
     }
     
     setAutoplaySpeed(speed);
@@ -288,15 +355,61 @@ function App() {
   const toggleViewMode = () => {
     // Play UI click sound
     if (soundEnabled && uiClickSoundRef.current) {
-      uiClickSoundRef.current.currentTime = 0;
-      uiClickSoundRef.current.play().catch(e => console.log("Audio play failed:", e));
+      try {
+        uiClickSoundRef.current.currentTime = 0;
+        uiClickSoundRef.current.play()
+          .catch(e => console.warn("Audio play failed:", e));
+      } catch (error) {
+        console.warn("Error playing UI click sound:", error);
+      }
     }
     
-    // Toggle view mode
+    // Bezpečnější přepínání režimů
     setViewMode(prev => {
       console.log("Přepínám režim z", prev, "na", prev === '3d' ? '2d' : '3d');
       return prev === '3d' ? '2d' : '3d';
     });
+  };
+
+  // Bezpečné renderování OrbitControls/FlyControls
+  const renderControls = () => {
+    if (viewMode === '3d') {
+      if (cameraMode === 'orbit') {
+        return (
+          <OrbitControls 
+            enableZoom={true} 
+            enablePan={false}
+            maxDistance={10}
+            minDistance={0.1}
+            minPolarAngle={0} 
+            maxPolarAngle={Math.PI}
+            target={[0, 0, 0]}
+            rotateSpeed={0.5}
+          />
+        );
+      } else {
+        return (
+          <FlyControls 
+            movementSpeed={2}
+            rollSpeed={0.2}
+            dragToLook={true}
+          />
+        );
+      }
+    } else {
+      return (
+        <OrbitControls 
+          enableZoom={false} 
+          enablePan={false}
+          enableRotate={false}
+          minPolarAngle={Math.PI / 2} 
+          maxPolarAngle={Math.PI / 2}
+          minAzimuthAngle={0}
+          maxAzimuthAngle={0}
+          target={[0, 0, 0]}
+        />
+      );
+    }
   };
 
   if (isLoading) {
@@ -325,40 +438,7 @@ function App() {
         >
           <Suspense fallback={<Loader />}>
             <SkyGallery currentDay={currentDay} totalDays={totalDays} />
-            {viewMode === '3d' ? (
-              cameraMode === 'orbit' ? (
-                <OrbitControls 
-                  enableZoom={true} 
-                  enablePan={false}
-                  maxDistance={10}
-                  minDistance={0.1}
-                  // Nastavení pro lepší pohled na oblohu
-                  minPolarAngle={0} 
-                  maxPolarAngle={Math.PI}
-                  // Výchozí rotace kamery - pohled na oblohu
-                  target={[0, 0, 0]}
-                  rotateSpeed={0.5} // Pomalejší rotace pro lepší kontrolu
-                />
-              ) : (
-                <FlyControls 
-                  movementSpeed={2}
-                  rollSpeed={0.2}
-                  dragToLook={true}
-                />
-              )
-            ) : (
-              // 2D režim - fixní kamera s omezeným pohybem
-              <OrbitControls 
-                enableZoom={false} 
-                enablePan={false}
-                enableRotate={false}
-                minPolarAngle={Math.PI / 2} 
-                maxPolarAngle={Math.PI / 2}
-                minAzimuthAngle={0}
-                maxAzimuthAngle={0}
-                target={[0, 0, 0]}
-              />
-            )}
+            {renderControls()}
           </Suspense>
         </Canvas>
       </div>

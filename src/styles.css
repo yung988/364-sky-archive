@@ -164,14 +164,22 @@ body, html {
   width: 80%;
   max-width: 1000px;
   z-index: 10;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .timeline {
   width: 100%;
-  height: 4px;
+  height: 8px;
   background-color: rgba(255, 255, 255, 0.2);
   position: relative;
   cursor: pointer;
+  border-radius: 4px;
+  overflow: visible;
 }
 
 .timeline:hover {
@@ -185,6 +193,8 @@ body, html {
   top: 0;
   left: 0;
   transition: width 0.3s ease;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
 }
 
 .timeline-marker {
@@ -198,6 +208,7 @@ body, html {
   cursor: pointer;
   z-index: 2;
   transition: all 0.2s ease;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 .timeline-marker:hover {
@@ -216,12 +227,16 @@ body, html {
   border-radius: 4px;
   font-size: 12px;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
   white-space: nowrap;
+  font-weight: bold;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .timeline-marker:hover .timeline-marker-label {
   opacity: 1;
+  transform: translateX(-50%) translateY(-5px);
 }
 
 .timeline-ripple {
@@ -244,6 +259,114 @@ body, html {
     transform: translate(-50%, -50%) scale(3);
     opacity: 0;
   }
+}
+
+/* Timeline tooltip */
+.timeline-tooltip {
+  position: absolute;
+  top: -80px;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  min-width: 120px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.timeline-tooltip:after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid rgba(0, 0, 0, 0.8);
+}
+
+.tooltip-date {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 5px;
+  color: white;
+}
+
+.tooltip-info {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 3px;
+}
+
+.tooltip-season {
+  font-size: 14px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: bold;
+}
+
+/* Season indicators */
+.timeline-seasons {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  display: flex;
+}
+
+.season {
+  position: relative;
+  height: 100%;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.season span {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.season:hover {
+  opacity: 1;
+}
+
+.season:hover span {
+  color: rgba(255, 255, 255, 1);
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.spring {
+  background: linear-gradient(to right, #7cff7c, #c9ff7c);
+}
+
+.summer {
+  background: linear-gradient(to right, #c9ff7c, #ffdc7c);
+}
+
+.fall {
+  background: linear-gradient(to right, #ffdc7c, #ff9d7c);
+}
+
+.winter {
+  background: linear-gradient(to right, #ff9d7c, #7cffff);
 }
 
 /* Info panel */
