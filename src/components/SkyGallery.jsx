@@ -24,6 +24,7 @@ const SkyGallery = ({ currentDay, totalDays }) => {
   const [prevDay, setPrevDay] = useState(currentDay);
   const [transitionProgress, setTransitionProgress] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [rotation, setRotation] = useState(0);
   
   // Calculate next day
   const nextDay = (currentDay + 1) % totalDays;
@@ -75,6 +76,21 @@ const SkyGallery = ({ currentDay, totalDays }) => {
     }
   }, [currentDay, prevDay, isTransitioning]);
   
+  // Velmi pomalá rotace oblohy
+  useFrame((state, delta) => {
+    if (meshRef.current) {
+      // Extrémně pomalá rotace - přibližně jeden obrat za hodinu
+      meshRef.current.rotation.y += delta * 0.0005;
+    }
+    
+    // Aktualizace materiálu
+    if (material) {
+      material.uniforms.texture1.value = texture;
+      material.uniforms.texture2.value = nextTexture;
+      material.uniforms.mixRatio.value = transitionProgress;
+    }
+  });
+  
   // Vytvoříme shader materiál pro prolínání obrázků
   const material = new THREE.ShaderMaterial({
     uniforms: {
@@ -106,15 +122,6 @@ const SkyGallery = ({ currentDay, totalDays }) => {
       }
     `,
     side: THREE.BackSide
-  });
-  
-  // Update material uniforms on each frame
-  useFrame(() => {
-    if (material) {
-      material.uniforms.texture1.value = texture;
-      material.uniforms.texture2.value = nextTexture;
-      material.uniforms.mixRatio.value = transitionProgress;
-    }
   });
   
   return (
