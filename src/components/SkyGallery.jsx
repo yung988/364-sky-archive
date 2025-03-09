@@ -10,8 +10,9 @@ const getImagePath = (dayIndex) => {
   const availableImages = 8;
   const imageNumber = (dayIndex % availableImages) + 1;
   
-  // Log path for debugging
-  const path = `/images/day_${imageNumber}.jpg`;
+  // Use base URL for GitHub Pages
+  const baseUrl = import.meta.env.BASE_URL || '/';
+  const path = `${baseUrl}images/day_${imageNumber}.jpg`;
   console.log("Loading image from path:", path);
   return path;
 };

@@ -372,13 +372,13 @@ function App() {
       
       {/* Audio elements */}
       <audio id="ambient-sound" loop preload="auto">
-        <source src="/sounds/ambient.mp3" type="audio/mp3" />
+        <source src={`${import.meta.env.BASE_URL || '/'}sounds/ambient.mp3`} type="audio/mp3" />
       </audio>
       <audio id="transition-sound" preload="auto">
-        <source src="/sounds/transition.mp3" type="audio/mp3" />
+        <source src={`${import.meta.env.BASE_URL || '/'}sounds/transition.mp3`} type="audio/mp3" />
       </audio>
       <audio id="ui-click-sound" preload="auto">
-        <source src="/sounds/click.mp3" type="audio/mp3" />
+        <source src={`${import.meta.env.BASE_URL || '/'}sounds/click.mp3`} type="audio/mp3" />
       </audio>
     </div>
   );
