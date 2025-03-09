@@ -221,16 +221,16 @@ const Timeline = ({ currentDay, totalDays, onDayChange }) => {
         
         {/* Season indicators */}
         <div className="timeline-seasons">
-          <div className="season spring" style={{ width: '25%', left: '0%' }}>
+          <div className="season spring">
             <span>Jaro</span>
           </div>
-          <div className="season summer" style={{ width: '25%', left: '25%' }}>
+          <div className="season summer">
             <span>Léto</span>
           </div>
-          <div className="season fall" style={{ width: '25%', left: '50%' }}>
+          <div className="season fall">
             <span>Podzim</span>
           </div>
-          <div className="season winter" style={{ width: '25%', left: '75%' }}>
+          <div className="season winter">
             <span>Zima</span>
           </div>
         </div>

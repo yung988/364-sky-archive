@@ -165,7 +165,7 @@ body, html {
   max-width: 1200px;
   z-index: 10;
   background-color: rgba(0, 0, 0, 0.7);
-  padding: 15px 15px 40px 15px;
+  padding: 15px 15px 50px 15px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -322,17 +322,20 @@ body, html {
   margin-top: 15px;
   left: 0;
   width: 100%;
-  height: 4px;
+  height: 8px;
   display: flex;
+  justify-content: space-between;
+  padding: 0 5px;
 }
 
 .season {
   position: relative;
-  height: 100%;
+  height: 8px;
   opacity: 0.8;
   transition: all 0.3s ease;
-  border-radius: 2px;
-  height: 8px;
+  border-radius: 4px;
+  width: 23%;
+  margin: 0 1%;
 }
 
 .season span {
@@ -359,19 +362,19 @@ body, html {
 }
 
 .spring {
-  background-color: rgba(124, 252, 0, 0.5);
+  background-color: rgba(124, 252, 0, 0.7);
 }
 
 .summer {
-  background-color: rgba(255, 215, 0, 0.5);
+  background-color: rgba(255, 215, 0, 0.7);
 }
 
 .fall {
-  background-color: rgba(205, 133, 63, 0.5);
+  background-color: rgba(205, 133, 63, 0.7);
 }
 
 .winter {
-  background-color: rgba(135, 206, 250, 0.5);
+  background-color: rgba(135, 206, 250, 0.7);
 }
 
 /* Info panel */
@@ -538,7 +541,7 @@ body, html {
   .timeline-container {
     width: 95%;
     top: 10px;
-    padding: 10px 10px 35px 10px;
+    padding: 10px 10px 45px 10px;
   }
   
   .timeline {
@@ -548,6 +551,11 @@ body, html {
   .timeline-marker-label {
     font-size: 10px;
     padding: 2px 4px;
+  }
+  
+  .season {
+    width: 22%;
+    margin: 0 1.5%;
   }
   
   .season span {
