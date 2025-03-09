@@ -58,6 +58,11 @@ const SkyGallery = ({ currentDay, totalDays }) => {
         tex.wrapS = THREE.ClampToEdgeWrapping;
         tex.wrapT = THREE.ClampToEdgeWrapping;
         tex.generateMipmaps = false; // Vypnutí mipmapování pro ostřejší obraz
+        
+        // Stranové otočení obrázků
+        tex.repeat.set(-1, 1);
+        tex.offset.set(1, 0);
+        
         tex.needsUpdate = true;
       }
     });
