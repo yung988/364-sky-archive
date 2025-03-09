@@ -392,18 +392,18 @@ body, html {
   position: relative;
   overflow: hidden;
   box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.8);
-  transform: skew(-2deg);
+  transform: none;
 }
 
 .control-button:hover {
   color: rgba(255, 255, 255, 1);
   background: rgba(0, 0, 0, 0.8);
-  transform: skew(-2deg) translate(-2px, -2px);
+  transform: translate(-2px, -2px);
   box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.8);
 }
 
 .control-button:active {
-  transform: skew(-2deg) translate(0px, 0px);
+  transform: translate(0px, 0px);
   box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
 }
 

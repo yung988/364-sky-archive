@@ -54,19 +54,22 @@ function App() {
   
   // Initialize sounds
   useEffect(() => {
+    // Get base URL for GitHub Pages
+    const baseUrl = import.meta.env.BASE_URL || '/';
+    
     // Create ambient background sound
-    const ambientSound = new Audio('/sounds/ambient.mp3');
+    const ambientSound = new Audio(`${baseUrl}sounds/ambient.mp3`);
     ambientSound.loop = true;
     ambientSound.volume = 0.3;
     ambientSoundRef.current = ambientSound;
     
     // Create transition sound
-    const transitionSound = new Audio('/sounds/transition.mp3');
+    const transitionSound = new Audio(`${baseUrl}sounds/transition.mp3`);
     transitionSound.volume = 0.5;
     transitionSoundRef.current = transitionSound;
     
     // Create UI click sound
-    const uiClickSound = new Audio('/sounds/click.mp3');
+    const uiClickSound = new Audio(`${baseUrl}sounds/click.mp3`);
     uiClickSound.volume = 0.2;
     uiClickSoundRef.current = uiClickSound;
     
