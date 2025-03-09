@@ -53,63 +53,128 @@ function FloatingControlBar({
   return (
     <div className="floating-control-bar">
       <div className="control-bar-content">
-        <div className="day-counter">DEN {currentDay + 1} / {totalDays}</div>
-        
+        <div className="day-counter">
+          Den {currentDay + 1} / {totalDays}
+        </div>
         <div className="control-buttons">
+          {/* Autoplay button */}
           <button 
-            className={`control-btn ${autoplay ? 'active' : ''}`}
+            className={`control-btn ${autoplay ? 'active' : ''}`} 
             onClick={onToggleAutoplay}
+            title={autoplay ? "Zastavit přehrávání" : "Spustit přehrávání"}
           >
             {autoplay ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="6" y="4" width="4" height="16"></rect>
+                <rect x="14" y="4" width="4" height="16"></rect>
+              </svg>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
             )}
-            <span>{autoplay ? "ZASTAVIT" : "PŘEHRÁT"}</span>
+            <span>{autoplay ? 'Zastavit' : 'Přehrát'}</span>
           </button>
           
+          {/* Previous day button */}
           <button 
-            className="control-btn"
-            onClick={() => onDayChange('prev')}
+            className="control-btn" 
+            onClick={() => onDayChange(-1)}
+            title="Předchozí den"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            <span>PŘEDCHOZÍ</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            <span>Předchozí</span>
           </button>
           
+          {/* Next day button */}
           <button 
-            className="control-btn"
-            onClick={() => onDayChange('next')}
+            className="control-btn" 
+            onClick={() => onDayChange(1)}
+            title="Následující den"
           >
-            <span>DALŠÍ</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <span>Další</span>
           </button>
           
+          {/* View mode toggle button */}
           <button 
-            className={`control-btn ${viewMode === '2d' ? 'active' : ''}`}
+            className={`control-btn ${viewMode === '2d' ? 'active' : ''}`} 
             onClick={onToggleViewMode}
+            title={viewMode === '3d' ? "Přepnout na 2D zobrazení" : "Přepnout na 3D zobrazení"}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-            <span>{viewMode === '3d' ? "2D" : "3D"}</span>
+            {viewMode === '3d' ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            )}
+            <span>{viewMode === '3d' ? '2D' : '3D'}</span>
           </button>
           
+          {/* Camera mode toggle button - only in 3D mode */}
+          {viewMode === '3d' && (
+            <button 
+              className={`control-btn ${cameraMode === 'fly' ? 'active' : ''}`} 
+              onClick={onToggleCameraMode}
+              title={cameraMode === 'orbit' ? "Přepnout na volný pohyb" : "Přepnout na orbitální pohyb"}
+            >
+              {cameraMode === 'orbit' ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <circle cx="12" cy="12" r="4"></circle>
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path>
+                  <polygon points="12 15 17 21 7 21 12 15"></polygon>
+                </svg>
+              )}
+              <span>{cameraMode === 'orbit' ? 'Volný' : 'Orbit'}</span>
+            </button>
+          )}
+          
+          {/* Sound toggle button */}
           <button 
-            className={`control-btn ${soundEnabled ? 'active' : ''}`}
+            className={`control-btn ${soundEnabled ? 'active' : ''}`} 
             onClick={onToggleSound}
+            title={soundEnabled ? "Vypnout zvuk" : "Zapnout zvuk"}
           >
             {soundEnabled ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+              </svg>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+              </svg>
             )}
-            <span>{soundEnabled ? "ZVUK: ZAP" : "ZVUK: VYP"}</span>
+            <span>{soundEnabled ? 'Zvuk' : 'Ztlumeno'}</span>
           </button>
           
+          {/* Info button */}
           <button 
-            className="control-btn info-btn"
+            className="control-btn info-btn" 
             onClick={onShowInfo}
+            title="Zobrazit informace o projektu"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            <span>INFO</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span>Info</span>
           </button>
         </div>
       </div>
@@ -252,12 +317,13 @@ function App() {
   }, [currentDay]);
 
   const handleDayChange = (direction) => {
-    if (direction === 'prev') {
+    if (direction === 'prev' || direction === -1) {
       setCurrentDay((prev) => (prev - 1 + totalDays) % totalDays);
-    } else if (direction === 'next') {
+    } else if (direction === 'next' || direction === 1) {
       setCurrentDay((prev) => (prev + 1) % totalDays);
     } else if (typeof direction === 'number') {
-      setCurrentDay(direction);
+      // Pokud je direction číslo, ale není 1 ani -1, považujeme ho za konkrétní den
+      setCurrentDay(Math.max(0, Math.min(totalDays - 1, direction)));
     }
     
     // Play transition sound if enabled
@@ -364,19 +430,64 @@ function App() {
       }
     }
     
-    // Bezpečnější přepínání režimů
+    // Bezpečnější přepínání režimů s resetováním kamery
     setViewMode(prev => {
-      console.log("Přepínám režim z", prev, "na", prev === '3d' ? '2d' : '3d');
-      return prev === '3d' ? '2d' : '3d';
+      const newMode = prev === '3d' ? '2d' : '3d';
+      console.log("Přepínám režim z", prev, "na", newMode);
+      
+      // Resetujeme kameru při změně režimu
+      setTimeout(() => {
+        const camera = document.querySelector('canvas')?._reactInternals?.canonical?.stateNode?.__r3f?.camera;
+        if (camera) {
+          if (newMode === '2d') {
+            // Pro 2D režim nastavíme kameru do pozice před rovinou
+            camera.position.set(0, 0, 10);
+            camera.lookAt(0, 0, -1);
+            camera.updateProjectionMatrix();
+          } else {
+            // Pro 3D režim nastavíme kameru dovnitř koule
+            camera.position.set(0, 0, 0);
+            camera.lookAt(1, 0, 0); // Podíváme se na nějaký bod uvnitř koule
+            camera.updateProjectionMatrix();
+          }
+        }
+      }, 50);
+      
+      return newMode;
     });
   };
 
   // Bezpečné renderování OrbitControls/FlyControls
   const renderControls = () => {
-    if (viewMode === '3d') {
+    // Použijeme key prop pro vynucení nové instance kontrolů při změně režimu
+    const controlKey = `controls-${viewMode}-${cameraMode}`;
+    
+    try {
+      // V 2D režimu použijeme omezené OrbitControls
+      if (viewMode === '2d') {
+        return (
+          <OrbitControls 
+            key={controlKey}
+            makeDefault
+            enableZoom={true} 
+            enablePan={true}
+            maxDistance={20}
+            minDistance={5}
+            // Omezíme rotaci, aby obrázek zůstal víceméně rovně
+            minPolarAngle={Math.PI / 4} 
+            maxPolarAngle={Math.PI / 2 + Math.PI / 4}
+            target={[0, 0, -1]}
+            rotateSpeed={0.5}
+          />
+        );
+      }
+      
+      // Kontroly pro 3D režim
       if (cameraMode === 'orbit') {
         return (
           <OrbitControls 
+            key={controlKey}
+            makeDefault
             enableZoom={true} 
             enablePan={false}
             maxDistance={10}
@@ -390,22 +501,23 @@ function App() {
       } else {
         return (
           <FlyControls 
+            key={controlKey}
+            makeDefault
             movementSpeed={2}
             rollSpeed={0.2}
             dragToLook={true}
           />
         );
       }
-    } else {
+    } catch (error) {
+      console.error("Error rendering controls:", error);
+      // Fallback na základní OrbitControls v případě chyby
       return (
         <OrbitControls 
-          enableZoom={false} 
+          key="fallback-controls"
+          makeDefault
+          enableZoom={true} 
           enablePan={false}
-          enableRotate={false}
-          minPolarAngle={Math.PI / 2} 
-          maxPolarAngle={Math.PI / 2}
-          minAzimuthAngle={0}
-          maxAzimuthAngle={0}
           target={[0, 0, 0]}
         />
       );
@@ -427,7 +539,14 @@ function App() {
     <div className="app-container">
       <div className="canvas-container">
         <Canvas 
-          camera={{ position: [0, 0, 0], fov: 75, near: 0.1, far: 1000 }}
+          camera={{ 
+            position: viewMode === '2d' ? [0, 0, 10] : [0, 0, 0], 
+            fov: viewMode === '2d' ? 40 : 75, 
+            near: 0.1, 
+            far: 1000,
+            // Nastavíme lookAt pro 2D režim
+            ...(viewMode === '2d' ? { lookAt: [0, 0, -1] } : {})
+          }}
           gl={{ 
             antialias: true,
             alpha: true,
@@ -437,7 +556,7 @@ function App() {
           dpr={[1, 2]} // Responsive pixel ratio
         >
           <Suspense fallback={<Loader />}>
-            <SkyGallery currentDay={currentDay} totalDays={totalDays} />
+            <SkyGallery currentDay={currentDay} totalDays={totalDays} viewMode={viewMode} />
             {renderControls()}
           </Suspense>
         </Canvas>
