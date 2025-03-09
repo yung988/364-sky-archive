@@ -124,16 +124,19 @@ const SkyGallery = ({ currentDay, totalDays }) => {
       varying vec2 vUv;
       
       void main() {
-        // Přesné vzorkování textur
-        vec4 color1 = texture2D(texture1, vUv);
-        vec4 color2 = texture2D(texture2, vUv);
+        // Upravené souřadnice pro správné zobrazení
+        vec2 flippedUv = vec2(1.0 - vUv.x, vUv.y);
+        
+        // Přesné vzorkování textur s upravenými souřadnicemi
+        vec4 color1 = texture2D(texture1, flippedUv);
+        vec4 color2 = texture2D(texture2, flippedUv);
         
         // Plynulý mix mezi texturami s easingem
         float smoothMix = smoothstep(0.0, 1.0, mixRatio);
         gl_FragColor = mix(color1, color2, smoothMix);
       }
     `,
-    side: THREE.FrontSide
+    side: THREE.BackSide  // Zpět na BackSide
   });
   
   return (
