@@ -54,53 +54,44 @@
   box-sizing: border-box;
 }
 
-body, html {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+body {
+  font-family: 'Inter', sans-serif;
   background-color: #000;
   color: #fff;
-}
-
-#root {
-  width: 100%;
-  height: 100%;
-}
-
-/* App container */
-.app-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
   overflow: hidden;
-  background-color: #000;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
 }
 
-/* Canvas container */
+.app-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
 .canvas-container {
-  width: 100%;
-  height: 100%;
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 1;
-}
-
-/* Loader */
-.loader-container {
   width: 100%;
   height: 100%;
+}
+
+/* Loader styles */
+.loader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #000;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .loader {
@@ -108,318 +99,90 @@ body, html {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  color: #fff;
 }
 
 .loader-spinner {
   width: 50px;
   height: 50px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 3px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  border-top-color: rgba(255, 255, 255, 0.8);
-  animation: spin 1.2s ease-in-out infinite;
-  opacity: 0.8;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loader-text {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .loader-progress-container {
   width: 200px;
-  height: 2px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
   overflow: hidden;
+  margin-bottom: 10px;
 }
 
 .loader-progress {
   height: 100%;
-  background: linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.9) 100%);
+  background-color: #fff;
   width: 0%;
 }
 
 .loader-percentage {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 300;
-  letter-spacing: 1px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.loader-text {
-  margin-top: 20px;
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
-  text-align: center;
-  max-width: 80%;
   font-weight: 500;
-  letter-spacing: 0.5px;
 }
 
-/* Timeline */
-.timeline-container {
+/* Info panel styles */
+.info-panel {
   position: fixed;
-  top: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 1200px;
-  z-index: 10;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 15px 15px 50px 15px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.timeline {
-  width: 100%;
-  height: 8px;
-  background-color: rgba(255, 255, 255, 0.2);
-  position: relative;
-  cursor: pointer;
-  border-radius: 4px;
-  overflow: visible;
-  margin-bottom: 10px;
-}
-
-.timeline:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
-.timeline-progress {
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
-  position: absolute;
   top: 0;
   left: 0;
-  transition: width 0.3s ease;
-  border-radius: 4px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
-}
-
-.timeline-marker {
-  width: 14px;
-  height: 14px;
-  background-color: white;
-  border-radius: 50%;
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  z-index: 2;
-  transition: all 0.2s ease;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
-  border: 2px solid rgba(0, 0, 0, 0.3);
-}
-
-.timeline-marker:hover {
-  transform: translate(-50%, -50%) scale(1.5);
-  box-shadow: 0 0 12px rgba(255, 255, 255, 1);
-}
-
-.timeline-marker-label {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  opacity: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  white-space: nowrap;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-.timeline-marker:hover .timeline-marker-label {
-  opacity: 1;
-  transform: translateX(-50%) translateY(-5px);
-}
-
-.timeline-ripple {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.4);
-  transform: translate(-50%, -50%);
-  animation: ripple 1.5s infinite ease-out;
-  z-index: 1;
-}
-
-@keyframes ripple {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(3);
-    opacity: 0;
-  }
-}
-
-/* Timeline tooltip */
-.timeline-tooltip {
-  position: absolute;
-  top: -70px;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 12px 16px;
-  border-radius: 8px;
-  z-index: 20;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-  min-width: 120px;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-}
-
-.timeline-tooltip:after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 8px solid rgba(0, 0, 0, 0.8);
-}
-
-.tooltip-date {
-  font-weight: bold;
-  font-size: 16px;
-  margin-bottom: 5px;
-  color: white;
-}
-
-.tooltip-info {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 3px;
-}
-
-.tooltip-season {
-  font-size: 14px;
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: bold;
-}
-
-/* Season indicators */
-.timeline-seasons {
-  position: relative;
-  margin-top: 15px;
-  left: 0;
   width: 100%;
-  height: 8px;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
   display: flex;
-  justify-content: space-between;
-  padding: 0 5px;
-}
-
-.season {
-  position: relative;
-  height: 8px;
-  opacity: 0.8;
-  transition: all 0.3s ease;
-  border-radius: 4px;
-  width: 23%;
-  margin: 0 1%;
-}
-
-.season span {
-  position: absolute;
-  top: -18px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 12px;
-  white-space: nowrap;
-  color: rgba(255, 255, 255, 0.9);
-  transition: all 0.3s ease;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
-}
-
-.season:hover {
-  opacity: 1;
-}
-
-.season:hover span {
-  color: rgba(255, 255, 255, 1);
-  transform: translateX(-50%) translateY(-2px);
-}
-
-.spring {
-  background-color: rgba(124, 252, 0, 0.7);
-}
-
-.summer {
-  background-color: rgba(255, 215, 0, 0.7);
-}
-
-.fall {
-  background-color: rgba(205, 133, 63, 0.7);
-}
-
-.winter {
-  background-color: rgba(135, 206, 250, 0.7);
-}
-
-/* Info panel */
-.info-panel {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80%;
-  max-width: 600px;
-  background-color: rgba(0, 0, 0, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  padding: 30px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   z-index: 100;
   opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  padding: 20px;
 }
 
 .info-panel.visible {
   opacity: 1;
-  visibility: visible;
+  pointer-events: all;
 }
 
 .info-title {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   text-align: center;
   letter-spacing: 1px;
-  color: white;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .info-content {
+  max-width: 800px;
   font-size: 16px;
   line-height: 1.6;
+  text-align: center;
   color: rgba(255, 255, 255, 0.9);
-  max-width: 800px;
-  margin: 0 auto;
 }
 
 .info-content p {
@@ -427,207 +190,183 @@ body, html {
 }
 
 .close-info-button {
-  display: block;
-  margin: 20px auto 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  color: white;
-  padding: 12px 30px;
-  font-size: 16px;
+  margin-top: 30px;
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s ease;
   font-family: inherit;
-  letter-spacing: 1px;
-  border-radius: 6px;
+  font-size: 14px;
   font-weight: 600;
-  z-index: 1000;
-  position: relative;
+  transition: background-color 0.3s ease;
 }
 
 .close-info-button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
-.close-info-button:active {
-  transform: scale(0.98);
+/* Day counter styles */
+.day-counter {
+  font-size: 18px;
+  font-weight: 600;
+  margin-right: 20px;
+  white-space: nowrap;
 }
 
-/* Floating Control Bar */
-.floating-control-bar {
-  position: fixed;
+/* Timeline styles */
+.timeline-container {
+  position: absolute;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   width: 80%;
   max-width: 1000px;
+  height: 40px;
   background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  padding: 15px 20px;
-  z-index: 100;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-}
-
-.control-bar-content {
+  border-radius: 20px;
+  padding: 10px;
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 16px;
-  justify-content: center;
+  z-index: 10;
 }
 
-.day-counter {
-  font-size: 18px;
+.timeline {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.timeline-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #fff;
+  border-radius: 2px;
+}
+
+.timeline-handle {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  background-color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.timeline-marker {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.5);
+  transform: translateX(-50%);
+}
+
+.timeline-marker.season {
+  height: 12px;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.timeline-marker-label {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
   font-weight: 600;
-  color: white;
-  margin-right: 20px;
+  color: #fff;
+  white-space: nowrap;
   letter-spacing: 0.5px;
 }
 
-.control-buttons {
-  display: flex;
-  gap: 8px;
-  flex-wrap: nowrap;
-  justify-content: center;
-}
-
-.control-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background-color: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 100px;
-  font-family: inherit;
-  font-weight: 500;
-}
-
-.control-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.control-btn:active {
-  transform: scale(0.98);
-}
-
-.control-btn.active {
-  background-color: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-}
-
-.control-btn svg {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-
-.control-btn span {
-  font-size: 14px;
+.season {
+  position: absolute;
+  top: -25px;
+  transform: translateX(-50%);
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
   white-space: nowrap;
-  font-weight: 500;
 }
 
-.info-btn {
-  margin-left: 8px;
+.season span {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
+/* Seasons colors */
+.season.spring span {
+  color: #8BC34A;
+}
+
+.season.summer span {
+  color: #FFEB3B;
+}
+
+.season.autumn span {
+  color: #FF9800;
+}
+
+.season.winter span {
+  color: #90CAF9;
+}
+
+/* Tooltip styles */
+.tooltip {
+  position: absolute;
+  top: -40px;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 3;
+}
+
+/* Responsive styles */
 @media (max-width: 768px) {
   .timeline-container {
-    width: 95%;
-    top: 10px;
-    padding: 10px 10px 45px 10px;
+    width: 90%;
+    bottom: 70px;
   }
   
-  .timeline {
-    margin-bottom: 8px;
-  }
-  
-  .timeline-marker-label {
-    font-size: 10px;
-    padding: 2px 4px;
-  }
-  
-  .season {
-    width: 22%;
-    margin: 0 1.5%;
-  }
-  
-  .season span {
-    font-size: 10px;
-    top: -15px;
-  }
-  
-  .floating-control-bar {
-    bottom: 10px;
-    padding: 10px;
-    width: 95%;
-  }
-  
-  .control-bar-content {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .control-buttons {
-    gap: 6px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .control-btn {
-    padding: 6px 10px;
-    font-size: 12px;
-    min-width: auto;
-  }
-  
-  .control-btn svg {
-    width: 16px;
-    height: 16px;
-  }
-  
-  .control-btn span {
-    font-size: 10px;
-  }
-  
-  .day-counter {
-    font-size: 14px;
-    margin-right: 0;
-    text-align: center;
-  }
-  
-  .info-panel {
-    width: 95%;
-    padding: 15px;
-    max-height: 90vh;
-    overflow-y: auto;
+  .timeline-marker-label, .season {
+    display: none;
   }
   
   .info-title {
-    font-size: 18px;
+    font-size: 24px;
   }
   
   .info-content {
     font-size: 14px;
   }
-  
-  .close-info-button {
-    padding: 15px 30px;
-    font-size: 18px;
-    margin: 30px auto 20px;
-    background-color: rgba(0, 0, 0, 0.7);
-    border: 3px solid rgba(255, 255, 255, 0.7);
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 480px) {
+  .timeline-container {
+    width: 95%;
+    bottom: 80px;
   }
+}
+
+/* Přidáme styly pro GlassNavigation */
+.glass-navigation {
+  z-index: 50;
 } 

@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars, useProgress, Html, FlyControls } from '@react-three/drei';
 import SkyGallery from './components/SkyGallery';
 import Timeline from './components/Timeline';
+import { GlassNavigation } from './components/GlassNavigation';
 import { gsap } from 'gsap';
 import './styles.css';
 
@@ -35,287 +36,112 @@ function Loader() {
   );
 }
 
-// Modern floating control bar component
-function FloatingControlBar({ 
-  currentDay, 
-  totalDays, 
-  autoplay, 
-  soundEnabled, 
-  cameraMode, 
-  viewMode,
-  onDayChange,
-  onToggleAutoplay,
-  onToggleSound,
-  onToggleCameraMode,
-  onToggleViewMode,
-  onShowInfo
-}) {
-  return (
-    <div className="floating-control-bar">
-      <div className="control-bar-content">
-        <div className="day-counter">
-          Den {currentDay + 1} / {totalDays}
-        </div>
-        <div className="control-buttons">
-          {/* Autoplay button */}
-          <button 
-            className={`control-btn ${autoplay ? 'active' : ''}`} 
-            onClick={onToggleAutoplay}
-            title={autoplay ? "Zastavit přehrávání" : "Spustit přehrávání"}
-          >
-            {autoplay ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="6" y="4" width="4" height="16"></rect>
-                <rect x="14" y="4" width="4" height="16"></rect>
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-              </svg>
-            )}
-            <span>{autoplay ? 'Zastavit' : 'Přehrát'}</span>
-          </button>
-          
-          {/* Previous day button */}
-          <button 
-            className="control-btn" 
-            onClick={() => onDayChange(-1)}
-            title="Předchozí den"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-            <span>Předchozí</span>
-          </button>
-          
-          {/* Next day button */}
-          <button 
-            className="control-btn" 
-            onClick={() => onDayChange(1)}
-            title="Následující den"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <span>Další</span>
-          </button>
-          
-          {/* View mode toggle button */}
-          <button 
-            className={`control-btn ${viewMode === '2d' ? 'active' : ''}`} 
-            onClick={onToggleViewMode}
-            title={viewMode === '3d' ? "Přepnout na 2D zobrazení" : "Přepnout na 3D zobrazení"}
-          >
-            {viewMode === '3d' ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-            )}
-            <span>{viewMode === '3d' ? '2D' : '3D'}</span>
-          </button>
-          
-          {/* Camera mode toggle button - only in 3D mode */}
-          {viewMode === '3d' && (
-            <button 
-              className={`control-btn ${cameraMode === 'fly' ? 'active' : ''}`} 
-              onClick={onToggleCameraMode}
-              title={cameraMode === 'orbit' ? "Přepnout na volný pohyb" : "Přepnout na orbitální pohyb"}
-            >
-              {cameraMode === 'orbit' ? (
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <circle cx="12" cy="12" r="4"></circle>
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path>
-                  <polygon points="12 15 17 21 7 21 12 15"></polygon>
-                </svg>
-              )}
-              <span>{cameraMode === 'orbit' ? 'Volný' : 'Orbit'}</span>
-            </button>
-          )}
-          
-          {/* Sound toggle button */}
-          <button 
-            className={`control-btn ${soundEnabled ? 'active' : ''}`} 
-            onClick={onToggleSound}
-            title={soundEnabled ? "Vypnout zvuk" : "Zapnout zvuk"}
-          >
-            {soundEnabled ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                <line x1="23" y1="9" x2="17" y2="15"></line>
-                <line x1="17" y1="9" x2="23" y2="15"></line>
-              </svg>
-            )}
-            <span>{soundEnabled ? 'Zvuk' : 'Ztlumeno'}</span>
-          </button>
-          
-          {/* Info button */}
-          <button 
-            className="control-btn info-btn" 
-            onClick={onShowInfo}
-            title="Zobrazit informace o projektu"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="16" x2="12" y2="12"></line>
-              <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </svg>
-            <span>Info</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function App() {
   const [currentDay, setCurrentDay] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [totalDays] = useState(364);
   const [autoplay, setAutoplay] = useState(false);
-  const [autoplaySpeed, setAutoplaySpeed] = useState(5000); // ms between days - default slower
-  const [showInfo, setShowInfo] = useState(false);
+  const [autoplaySpeed, setAutoplaySpeed] = useState(1000); // ms between days
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState('orbit'); // 'orbit' or 'fly'
   const [viewMode, setViewMode] = useState('3d'); // '3d' or '2d'
-  const [timeOfDay, setTimeOfDay] = useState('den'); // 'den' or 'noc'
-  const totalDays = 364;
+  const [showInfo, setShowInfo] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [timeOfDay, setTimeOfDay] = useState('day'); // 'day', 'sunset', 'night', 'sunrise'
   
-  // Audio references
+  // Audio refs
   const ambientSoundRef = useRef(null);
   const transitionSoundRef = useRef(null);
   const uiClickSoundRef = useRef(null);
   
-  // Initialize sounds
+  // Autoplay interval ref
+  const autoplayIntervalRef = useRef(null);
+  
+  // Load audio elements
   useEffect(() => {
-    try {
-      // Get base URL for GitHub Pages
-      const baseUrl = import.meta.env.BASE_URL || '/';
-      
-      // Create ambient background sound
-      const ambientSound = new Audio(`${baseUrl}sounds/ambient.mp3`);
-      ambientSound.loop = true;
-      ambientSound.volume = 0.3;
-      ambientSoundRef.current = ambientSound;
-      
-      // Create transition sound
-      const transitionSound = new Audio(`${baseUrl}sounds/transition.mp3`);
-      transitionSound.volume = 0.5;
-      transitionSoundRef.current = transitionSound;
-      
-      // Create UI click sound
-      const uiClickSound = new Audio(`${baseUrl}sounds/click.mp3`);
-      uiClickSound.volume = 0.2;
-      uiClickSoundRef.current = uiClickSound;
-      
-      // Předem načteme zvuky
-      ambientSound.load();
-      transitionSound.load();
-      uiClickSound.load();
-      
-      // Přidáme error handler pro zvuky
-      const handleAudioError = (e) => {
-        console.warn("Audio loading failed:", e);
-        // Vypneme zvuk, pokud nastane chyba
-        setSoundEnabled(false);
-      };
-      
-      ambientSound.addEventListener('error', handleAudioError);
-      transitionSound.addEventListener('error', handleAudioError);
-      uiClickSound.addEventListener('error', handleAudioError);
-      
-      // Cleanup on unmount
-      return () => {
-        if (ambientSoundRef.current) {
-          ambientSoundRef.current.pause();
-          ambientSoundRef.current.removeEventListener('error', handleAudioError);
-        }
-        if (transitionSoundRef.current) {
-          transitionSoundRef.current.removeEventListener('error', handleAudioError);
-        }
-        if (uiClickSoundRef.current) {
-          uiClickSoundRef.current.removeEventListener('error', handleAudioError);
-        }
-      };
-    } catch (error) {
-      console.error("Error initializing sounds:", error);
-      setSoundEnabled(false);
+    ambientSoundRef.current = document.getElementById('ambient-sound');
+    transitionSoundRef.current = document.getElementById('transition-sound');
+    uiClickSoundRef.current = document.getElementById('ui-click-sound');
+    
+    // Add error handlers
+    if (ambientSoundRef.current) {
+      ambientSoundRef.current.addEventListener('error', handleAudioError);
     }
+    if (transitionSoundRef.current) {
+      transitionSoundRef.current.addEventListener('error', handleAudioError);
+    }
+    if (uiClickSoundRef.current) {
+      uiClickSoundRef.current.addEventListener('error', handleAudioError);
+    }
+    
+    // Cleanup
+    return () => {
+      if (ambientSoundRef.current) {
+        ambientSoundRef.current.removeEventListener('error', handleAudioError);
+      }
+      if (transitionSoundRef.current) {
+        transitionSoundRef.current.removeEventListener('error', handleAudioError);
+      }
+      if (uiClickSoundRef.current) {
+        uiClickSoundRef.current.removeEventListener('error', handleAudioError);
+      }
+    };
   }, []);
   
-  // Toggle sound
+  // Handle loading state
   useEffect(() => {
-    if (soundEnabled && ambientSoundRef.current) {
-      ambientSoundRef.current.play()
-        .catch(e => {
-          console.warn("Audio play failed:", e);
-          setSoundEnabled(false);
-        });
-    } else if (ambientSoundRef.current) {
-      ambientSoundRef.current.pause();
-    }
-  }, [soundEnabled]);
-
-  // Handle autoplay functionality
-  useEffect(() => {
-    let interval;
-    if (autoplay) {
-      interval = setInterval(() => {
-        setCurrentDay((prev) => {
-          const nextDay = (prev + 1) % totalDays;
-          // Play transition sound if enabled
-          if (soundEnabled && transitionSoundRef.current) {
-            try {
-              transitionSoundRef.current.currentTime = 0;
-              transitionSoundRef.current.play()
-                .catch(e => console.warn("Audio play failed:", e));
-            } catch (error) {
-              console.warn("Error playing transition sound:", error);
-            }
-          }
-          return nextDay;
-        });
-      }, autoplaySpeed);
-    }
-    return () => clearInterval(interval);
-  }, [autoplay, totalDays, autoplaySpeed, soundEnabled]);
-
-  // Simulate loading
-  useEffect(() => {
+    // Simulate loading time
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+    }, 2000);
+    
     return () => clearTimeout(timer);
   }, []);
-
-  // Funkce pro určení denní doby podle dne v roce
-  const determineTimeOfDay = (day) => {
-    // Jednoduchá simulace - polovina roku je den, polovina noc
-    if (day < totalDays / 2) {
-      setTimeOfDay('den');
+  
+  // Handle autoplay
+  useEffect(() => {
+    if (autoplay) {
+      autoplayIntervalRef.current = setInterval(() => {
+        setCurrentDay(prev => (prev + 1) % totalDays);
+      }, autoplaySpeed);
     } else {
-      setTimeOfDay('noc');
+      clearInterval(autoplayIntervalRef.current);
     }
+    
+    return () => clearInterval(autoplayIntervalRef.current);
+  }, [autoplay, autoplaySpeed, totalDays]);
+  
+  // Handle ambient sound
+  useEffect(() => {
+    if (ambientSoundRef.current) {
+      if (soundEnabled) {
+        ambientSoundRef.current.play().catch(e => console.warn("Audio play failed:", e));
+      } else {
+        ambientSoundRef.current.pause();
+      }
+    }
+  }, [soundEnabled]);
+  
+  // Error handler for audio
+  const handleAudioError = (e) => {
+    console.error("Audio loading failed: ", e);
   };
   
-  // Aktualizace denní doby při změně dne
+  // Determine time of day based on current day
+  const determineTimeOfDay = (day) => {
+    // Simplified logic - in a real app, this would be more sophisticated
+    const hour = (day * 24) % 24;
+    
+    if (hour >= 6 && hour < 10) return 'sunrise';
+    if (hour >= 10 && hour < 18) return 'day';
+    if (hour >= 18 && hour < 22) return 'sunset';
+    return 'night';
+  };
+  
+  // Update time of day when current day changes
   useEffect(() => {
-    determineTimeOfDay(currentDay);
+    setTimeOfDay(determineTimeOfDay(currentDay));
   }, [currentDay]);
-
+  
   const handleDayChange = (direction) => {
     if (direction === 'prev' || direction === -1) {
       setCurrentDay((prev) => (prev - 1 + totalDays) % totalDays);
@@ -342,7 +168,7 @@ function App() {
 
   const toggleAutoplay = () => {
     // Play UI click sound
-    if (uiClickSoundRef.current) {
+    if (soundEnabled && uiClickSoundRef.current) {
       try {
         uiClickSoundRef.current.currentTime = 0;
         uiClickSoundRef.current.play()
@@ -352,13 +178,13 @@ function App() {
       }
     }
     
-    setAutoplay(!autoplay);
+    setAutoplay(prev => !prev);
   };
-  
+
   const toggleSound = () => {
-    setSoundEnabled(!soundEnabled);
+    setSoundEnabled(prev => !prev);
     
-    // Play UI click sound if enabling sound
+    // Play UI click sound if turning sound on
     if (!soundEnabled && uiClickSoundRef.current) {
       try {
         uiClickSoundRef.current.currentTime = 0;
@@ -369,7 +195,7 @@ function App() {
       }
     }
   };
-  
+
   const toggleCameraMode = () => {
     // Play UI click sound
     if (soundEnabled && uiClickSoundRef.current) {
@@ -384,8 +210,7 @@ function App() {
     
     setCameraMode(prev => prev === 'orbit' ? 'fly' : 'orbit');
   };
-  
-  // Toggle info panel
+
   const toggleInfo = () => {
     // Play UI click sound
     if (soundEnabled && uiClickSoundRef.current) {
@@ -398,22 +223,10 @@ function App() {
       }
     }
     
-    // Toggle info panel visibility
     setShowInfo(prev => !prev);
   };
-  
+
   const changeAutoplaySpeed = (speed) => {
-    // Play UI click sound
-    if (soundEnabled && uiClickSoundRef.current) {
-      try {
-        uiClickSoundRef.current.currentTime = 0;
-        uiClickSoundRef.current.play()
-          .catch(e => console.warn("Audio play failed:", e));
-      } catch (error) {
-        console.warn("Error playing UI click sound:", error);
-      }
-    }
-    
     setAutoplaySpeed(speed);
   };
 
@@ -535,6 +348,24 @@ function App() {
     );
   }
 
+  // Funkce pro změnu sezóny
+  const handleSeasonChange = (seasonId) => {
+    // Přepočítáme den podle sezóny
+    const seasonRanges = {
+      1: { start: 1, end: 91 }, // Jaro
+      2: { start: 92, end: 183 }, // Léto
+      3: { start: 184, end: 274 }, // Podzim
+      4: { start: 275, end: 364 }, // Zima
+    };
+    
+    const range = seasonRanges[seasonId];
+    if (range) {
+      // Nastavíme den na střed sezóny
+      const middleDay = Math.floor((range.start + range.end) / 2);
+      setCurrentDay(middleDay);
+    }
+  };
+
   return (
     <div className="app-container">
       <div className="canvas-container">
@@ -562,26 +393,18 @@ function App() {
         </Canvas>
       </div>
       
-      {/* Modern Floating Control Bar */}
-      <FloatingControlBar 
-        currentDay={currentDay}
+      {/* Nová GlassNavigation komponenta */}
+      <GlassNavigation 
+        currentDay={currentDay + 1}
         totalDays={totalDays}
-        autoplay={autoplay}
-        soundEnabled={soundEnabled}
-        cameraMode={cameraMode}
-        viewMode={viewMode}
-        onDayChange={handleDayChange}
-        onToggleAutoplay={toggleAutoplay}
-        onToggleSound={toggleSound}
-        onToggleCameraMode={toggleCameraMode}
+        onPlay={toggleAutoplay}
+        onPause={toggleAutoplay}
+        onPrevious={() => handleDayChange(-1)}
+        onNext={() => handleDayChange(1)}
+        onSoundToggle={toggleSound}
         onToggleViewMode={toggleViewMode}
-        onShowInfo={toggleInfo}
-      />
-      
-      <Timeline 
-        currentDay={currentDay} 
-        totalDays={totalDays} 
-        onDayChange={handleDayChange} 
+        onInfo={toggleInfo}
+        onSeasonChange={handleSeasonChange}
       />
       
       <div className={`info-panel ${showInfo ? 'visible' : ''}`}>
