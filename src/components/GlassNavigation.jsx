@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Play, Pause, ChevronLeft, ChevronRight, Volume2, VolumeX, Info, Menu, X, Globe } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Play,
+  Pause,
+  ChevronLeft,
+  ChevronRight,
+  Globe,
+  Volume2,
+  VolumeX,
+  Info,
+  Menu,
+  X,
+  Sun,
+  Leaf,
+  Snowflake,
+} from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export function GlassNavigation({
@@ -16,64 +30,94 @@ export function GlassNavigation({
   totalDays = 364,
   className,
 }) {
-  // State
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isSoundOn, setIsSoundOn] = useState(false);
-  const [language, setLanguage] = useState('cs');
+  const [soundOn, setSoundOn] = useState(false);
+  const [language, setLanguage] = useState("EN");
   const [activeSeason, setActiveSeason] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Data
+  // Seasons data
   const seasons = [
-    { id: 1, name: 'Jaro', days: { start: 1, end: 91 } },
-    { id: 2, name: 'Léto', days: { start: 92, end: 183 } },
-    { id: 3, name: 'Podzim', days: { start: 184, end: 274 } },
-    { id: 4, name: 'Zima', days: { start: 275, end: 364 } },
+    {
+      id: 1,
+      name: "Jaro",
+      icon: <Sun className="size-4" />,
+      color: "#10b981",
+      gradient: "from-emerald-500 to-green-500",
+    },
+    {
+      id: 2,
+      name: "Léto",
+      icon: <Sun className="size-4" />,
+      color: "#f59e0b",
+      gradient: "from-amber-500 to-yellow-500",
+    },
+    {
+      id: 3,
+      name: "Podzim",
+      icon: <Leaf className="size-4" />,
+      color: "#ef4444",
+      gradient: "from-red-500 to-orange-500",
+    },
+    {
+      id: 4,
+      name: "Zima",
+      icon: <Snowflake className="size-4" />,
+      color: "#3b82f6",
+      gradient: "from-blue-500 to-indigo-500",
+    },
   ];
 
-  // Check if mobile
+  // Days in each season
+  const seasonDays = {
+    1: { start: 1, end: 91 }, // Jaro
+    2: { start: 92, end: 183 }, // Léto
+    3: { start: 184, end: 274 }, // Podzim
+    4: { start: 275, end: 364 }, // Zima
+  };
+
+  // Check if mobile on mount and on resize
   useEffect(() => {
     const checkIfMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+      setIsMobile(window.innerWidth < 768);
     };
 
     checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
+    window.addEventListener("resize", checkIfMobile);
 
     return () => {
-      window.removeEventListener('resize', checkIfMobile);
+      window.removeEventListener("resize", checkIfMobile);
     };
   }, []);
 
   // Update active season based on current day
   useEffect(() => {
-    const newSeason = seasons.find(
-      season => currentDay >= season.days.start && currentDay <= season.days.end
-    );
-    
-    if (newSeason && newSeason.id !== activeSeason) {
-      setActiveSeason(newSeason.id);
+    for (const [id, range] of Object.entries(seasonDays)) {
+      if (currentDay >= range.start && currentDay <= range.end) {
+        setActiveSeason(Number.parseInt(id));
+        break;
+      }
     }
-  }, [currentDay, seasons, activeSeason]);
+  }, [currentDay]);
 
-  // Handlers
   const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-    if (isPlaying) {
-      onPause?.();
-    } else {
+    const newState = !isPlaying;
+    setIsPlaying(newState);
+    if (newState) {
       onPlay?.();
+    } else {
+      onPause?.();
     }
   };
 
   const handleSoundToggle = () => {
-    setIsSoundOn(!isSoundOn);
+    setSoundOn(!soundOn);
     onSoundToggle?.();
   };
 
   const handleLanguageToggle = () => {
-    setLanguage(language === 'cs' ? 'en' : 'cs');
+    setLanguage(language === "EN" ? "CZ" : "EN");
     onLanguageToggle?.();
   };
 
@@ -82,123 +126,153 @@ export function GlassNavigation({
     onSeasonChange?.(seasonId);
   };
 
-  // Calculate progress
-  const progress = (currentDay / totalDays) * 100;
+  const currentSeason = seasons.find((s) => s.id === activeSeason) || seasons[0];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={cn(
-        "glass-navigation fixed bottom-4 left-1/2 -translate-x-1/2 w-[95%] max-w-3xl rounded-full backdrop-blur-md bg-black/30 border border-white/10 shadow-lg overflow-hidden",
-        className
-      )}
-    >
+    <>
+      {/* Mobile menu button */}
       {isMobile && (
-        <button 
+        <motion.button
+          className="fixed bottom-6 right-6 z-50 flex size-14 items-center justify-center rounded-full bg-white/10 text-white shadow-lg backdrop-blur-xl"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="absolute top-3 right-3 md:hidden z-50 text-white/80 hover:text-white"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </motion.button>
       )}
 
-      <div className={cn(
-        "flex flex-col md:flex-row items-center justify-between p-3 md:p-4 gap-2",
-        isMobile && !isMenuOpen && "items-center justify-center"
-      )}>
-        {/* Main controls - always visible */}
-        <div className="flex items-center justify-center gap-2 w-full md:w-auto">
-          <button 
-            onClick={handlePlayPause}
-            className="bg-white/10 hover:bg-white/20 rounded-full p-2 text-white transition-colors"
-            aria-label={isPlaying ? "Pause" : "Play"}
-          >
-            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-          </button>
-          
-          <button 
-            onClick={onPrevious}
-            className="bg-white/10 hover:bg-white/20 rounded-full p-2 text-white transition-colors"
-            aria-label="Previous day"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          
-          <div className="text-white/90 font-medium text-sm px-2">
-            Den {currentDay} / {totalDays}
-          </div>
-          
-          <button 
-            onClick={onNext}
-            className="bg-white/10 hover:bg-white/20 rounded-full p-2 text-white transition-colors"
-            aria-label="Next day"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
-
-        {/* Progress bar */}
-        <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-white/80 rounded-full"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-
-        {/* Secondary controls - hidden on mobile unless menu is open */}
+      {/* Main navigation */}
+      <AnimatePresence>
         {(!isMobile || isMenuOpen) && (
-          <div className="flex items-center justify-center gap-2 w-full md:w-auto">
-            {/* Season buttons */}
-            <div className="flex gap-1">
-              {seasons.map(season => (
-                <button
-                  key={season.id}
-                  onClick={() => handleSeasonChange(season.id)}
-                  className={cn(
-                    "px-2 py-1 text-xs rounded-md transition-colors",
-                    activeSeason === season.id 
-                      ? "bg-white/20 text-white" 
-                      : "bg-transparent text-white/60 hover:text-white/80"
-                  )}
-                >
-                  {season.name}
-                </button>
-              ))}
-            </div>
-            
-            {/* Language toggle */}
-            {onLanguageToggle && (
-              <button 
-                onClick={handleLanguageToggle}
-                className="bg-white/10 hover:bg-white/20 rounded-full p-2 text-white transition-colors"
-                aria-label="Toggle language"
-              >
-                <Globe size={18} />
-              </button>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+            className={cn(
+              "fixed z-40 flex flex-col gap-4",
+              isMobile ? "inset-x-4 bottom-24" : "inset-x-0 bottom-8",
+              className,
             )}
-            
-            {/* Sound toggle */}
-            <button 
-              onClick={handleSoundToggle}
-              className="bg-white/10 hover:bg-white/20 rounded-full p-2 text-white transition-colors"
-              aria-label={isSoundOn ? "Mute" : "Unmute"}
+          >
+            {/* Main control panel */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="mx-auto w-full max-w-3xl overflow-hidden rounded-2xl border border-white/20 bg-white/10 shadow-xl backdrop-blur-xl"
             >
-              {isSoundOn ? <Volume2 size={18} /> : <VolumeX size={18} />}
-            </button>
-            
-            {/* Info button */}
-            <button 
-              onClick={onInfo}
-              className="bg-white/10 hover:bg-white/20 rounded-full p-2 text-white transition-colors"
-              aria-label="Information"
-            >
-              <Info size={18} />
-            </button>
-          </div>
+              {/* Progress bar */}
+              <div className="relative h-1 w-full overflow-hidden">
+                <div
+                  className={`absolute left-0 top-0 h-full bg-gradient-to-r ${currentSeason.gradient}`}
+                  style={{ width: `${(currentDay / totalDays) * 100}%` }}
+                />
+              </div>
+
+              <div className="flex flex-col p-4">
+                {/* Season selector */}
+                <div className="mb-4 flex items-center justify-between rounded-xl bg-black/10 p-1">
+                  {seasons.map((season) => (
+                    <motion.button
+                      key={season.id}
+                      onClick={() => handleSeasonChange(season.id)}
+                      className={cn(
+                        "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all",
+                        activeSeason === season.id ? "text-white" : "text-white/60 hover:text-white/80",
+                      )}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {activeSeason === season.id && (
+                        <motion.div
+                          className={`absolute inset-0 rounded-lg bg-gradient-to-r ${season.gradient}`}
+                          layoutId="activeSeasonGlass"
+                          transition={{ type: "spring", duration: 0.6 }}
+                        />
+                      )}
+                      <span className="relative z-10">{season.icon}</span>
+                      <span className="relative z-10">{season.name}</span>
+                    </motion.button>
+                  ))}
+                </div>
+
+                {/* Controls */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium text-white">
+                      DEN {currentDay} / {totalDays}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <motion.button
+                      onClick={handlePlayPause}
+                      className={`flex size-10 items-center justify-center rounded-full bg-gradient-to-r ${currentSeason.gradient} text-white shadow-md`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                    </motion.button>
+
+                    <div className="flex items-center gap-2">
+                      <motion.button
+                        onClick={onPrevious}
+                        className="flex size-8 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <ChevronLeft size={18} />
+                      </motion.button>
+
+                      <motion.button
+                        onClick={onNext}
+                        className="flex size-8 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <ChevronRight size={18} />
+                      </motion.button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {onLanguageToggle && (
+                      <motion.button
+                        onClick={handleLanguageToggle}
+                        className="flex size-8 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Globe size={16} />
+                      </motion.button>
+                    )}
+
+                    <motion.button
+                      onClick={handleSoundToggle}
+                      className="flex size-8 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {soundOn ? <Volume2 size={16} /> : <VolumeX size={16} />}
+                    </motion.button>
+
+                    <motion.button
+                      onClick={onInfo}
+                      className="flex size-8 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Info size={16} />
+                    </motion.button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
-      </div>
-    </motion.div>
+      </AnimatePresence>
+    </>
   );
 } 

@@ -402,7 +402,6 @@ function App() {
         onPrevious={() => handleDayChange(-1)}
         onNext={() => handleDayChange(1)}
         onSoundToggle={toggleSound}
-        onToggleViewMode={toggleViewMode}
         onInfo={toggleInfo}
         onSeasonChange={handleSeasonChange}
       />
