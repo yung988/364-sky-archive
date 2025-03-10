@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+"use client"
+
+import React from "react"
+
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   Play,
   Pause,
@@ -14,8 +18,8 @@ import {
   Sun,
   Leaf,
   Snowflake,
-} from 'lucide-react';
-import { cn } from '../lib/utils';
+} from "lucide-react"
+import { cn } from "../lib/utils"
 
 export function GlassNavigation({
   onPlay,
@@ -24,18 +28,19 @@ export function GlassNavigation({
   onNext,
   onLanguageToggle,
   onSoundToggle,
+  onToggleViewMode,
   onInfo,
   onSeasonChange,
   currentDay = 1,
   totalDays = 364,
   className,
 }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [soundOn, setSoundOn] = useState(false);
-  const [language, setLanguage] = useState("EN");
-  const [activeSeason, setActiveSeason] = useState(1);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [soundOn, setSoundOn] = useState(false)
+  const [language, setLanguage] = useState("EN")
+  const [activeSeason, setActiveSeason] = useState(1)
+  const [isMobile, setIsMobile] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   // Seasons data
   const seasons = [
@@ -67,66 +72,66 @@ export function GlassNavigation({
       color: "#3b82f6",
       gradient: "from-blue-500 to-indigo-500",
     },
-  ];
+  ]
 
   // Days in each season
   const seasonDays = {
     1: { start: 1, end: 91 }, // Jaro
     2: { start: 92, end: 183 }, // Léto
     3: { start: 184, end: 274 }, // Podzim
-    4: { start: 275, end: 364 }, // Zima
-  };
+    4: { start: 275, end: 365 }, // Zima
+  }
 
   // Check if mobile on mount and on resize
   useEffect(() => {
     const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+      setIsMobile(window.innerWidth < 768)
+    }
 
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
+    checkIfMobile()
+    window.addEventListener("resize", checkIfMobile)
 
     return () => {
-      window.removeEventListener("resize", checkIfMobile);
-    };
-  }, []);
+      window.removeEventListener("resize", checkIfMobile)
+    }
+  }, [])
 
   // Update active season based on current day
   useEffect(() => {
     for (const [id, range] of Object.entries(seasonDays)) {
       if (currentDay >= range.start && currentDay <= range.end) {
-        setActiveSeason(Number.parseInt(id));
-        break;
+        setActiveSeason(Number.parseInt(id))
+        break
       }
     }
-  }, [currentDay]);
+  }, [currentDay])
 
   const handlePlayPause = () => {
-    const newState = !isPlaying;
-    setIsPlaying(newState);
+    const newState = !isPlaying
+    setIsPlaying(newState)
     if (newState) {
-      onPlay?.();
+      onPlay?.()
     } else {
-      onPause?.();
+      onPause?.()
     }
-  };
+  }
 
   const handleSoundToggle = () => {
-    setSoundOn(!soundOn);
-    onSoundToggle?.();
-  };
+    setSoundOn(!soundOn)
+    onSoundToggle?.()
+  }
 
   const handleLanguageToggle = () => {
-    setLanguage(language === "EN" ? "CZ" : "EN");
-    onLanguageToggle?.();
-  };
+    setLanguage(language === "EN" ? "CZ" : "EN")
+    onLanguageToggle?.()
+  }
 
   const handleSeasonChange = (seasonId) => {
-    setActiveSeason(seasonId);
-    onSeasonChange?.(seasonId);
-  };
+    setActiveSeason(seasonId)
+    onSeasonChange?.(seasonId)
+  }
 
-  const currentSeason = seasons.find((s) => s.id === activeSeason) || seasons[0];
+  const currentSeason = seasons.find((s) => s.id === activeSeason) || seasons[0]
 
   return (
     <>
@@ -238,6 +243,17 @@ export function GlassNavigation({
                   </div>
 
                   <div className="flex items-center gap-2">
+                    {onToggleViewMode && (
+                      <motion.button
+                        onClick={onToggleViewMode}
+                        className="flex size-8 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <span className="text-xs font-medium">2D</span>
+                      </motion.button>
+                    )}
+                    
                     {onLanguageToggle && (
                       <motion.button
                         onClick={handleLanguageToggle}
@@ -274,5 +290,5 @@ export function GlassNavigation({
         )}
       </AnimatePresence>
     </>
-  );
+  )
 } 
