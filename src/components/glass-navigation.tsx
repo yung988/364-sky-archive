@@ -21,6 +21,29 @@ import {
 } from "lucide-react"
 import { cn } from "../lib/utils"
 
+interface Season {
+  id: number
+  name: string
+  icon: React.ReactNode
+  color: string
+  gradient: string
+}
+
+interface GlassNavigationProps {
+  onPlay?: () => void
+  onPause?: () => void
+  onPrevious?: () => void
+  onNext?: () => void
+  onLanguageToggle?: () => void
+  onSoundToggle?: () => void
+  onToggleViewMode?: () => void
+  onInfo?: () => void
+  onSeasonChange?: (seasonId: number) => void
+  currentDay?: number
+  totalDays?: number
+  className?: string
+}
+
 export function GlassNavigation({
   onPlay,
   onPause,
@@ -34,7 +57,7 @@ export function GlassNavigation({
   currentDay = 1,
   totalDays = 364,
   className,
-}) {
+}: GlassNavigationProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [soundOn, setSoundOn] = useState(false)
   const [language, setLanguage] = useState("EN")
@@ -43,7 +66,7 @@ export function GlassNavigation({
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   // Seasons data
-  const seasons = [
+  const seasons: Season[] = [
     {
       id: 1,
       name: "Jaro",
@@ -126,7 +149,7 @@ export function GlassNavigation({
     onLanguageToggle?.()
   }
 
-  const handleSeasonChange = (seasonId) => {
+  const handleSeasonChange = (seasonId: number) => {
     setActiveSeason(seasonId)
     onSeasonChange?.(seasonId)
   }
@@ -291,4 +314,5 @@ export function GlassNavigation({
       </AnimatePresence>
     </>
   )
-} 
+}
+

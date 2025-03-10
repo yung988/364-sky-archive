@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars, useProgress, Html, FlyControls } from '@react-three/drei';
 import SkyGallery from './components/SkyGallery';
 import Timeline from './components/Timeline';
-import { GlassNavigation } from './components/GlassNavigation';
+import { GlassNavigation } from './components/glass-navigation';
 import { gsap } from 'gsap';
 import './styles.css';
 
